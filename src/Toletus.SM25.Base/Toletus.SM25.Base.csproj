@@ -9,7 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Toletus.SM25.Command\Toletus.SM25.Command.csproj" PrivateAssets="all" />
+		<ProjectReference Include="..\Toletus.SM25.Command\Toletus.SM25.Command.csproj"/>
 	</ItemGroup>
 
 </Project>
