@@ -3,15 +3,23 @@
   <PropertyGroup>
 	<TargetFramework>net7</TargetFramework>
     <Nullable>enable</Nullable>
+
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Toletus.SM25.Base\Toletus.SM25.Base.csproj" />
-    <ProjectReference Include="..\Toletus.SM25.Command\Toletus.SM25.Command.csproj" />
+    <ProjectReference Include="..\Toletus.SM25.Base\Toletus.SM25.Base.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Toletus.SM25.Command\Toletus.SM25.Command.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Enums.NET" Version="4.0.1" />
   </ItemGroup>
+
+  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')-&gt;WithMetadataValue('PrivateAssets', 'All'))" />
+    </ItemGroup>
+  </Target>
 
 </Project>
