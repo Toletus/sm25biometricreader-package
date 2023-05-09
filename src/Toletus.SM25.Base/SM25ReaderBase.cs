@@ -12,8 +12,6 @@ namespace Toletus.SM25.Base
 {
     public class SM25ReaderBase
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
         private TcpClient _client;
         //private Thread _reponseThread;
         protected SendCommand LastSendCommand;
@@ -27,6 +25,11 @@ namespace Toletus.SM25.Base
 
         public bool Busy { get; set; }
         public bool Enrolling { get; set; }
+
+        public SM25ReaderBase(IPAddress ip)
+        {
+            Ip = ip;
+        }
 
         public bool Connected
         {
@@ -43,11 +46,6 @@ namespace Toletus.SM25.Base
             }
         }
 
-        public SM25ReaderBase(IPAddress ip)
-        {
-            Ip = ip;
-        }
-
         public void TestFingerprintReaderConnection()
         {
             try
@@ -57,10 +55,12 @@ namespace Toletus.SM25.Base
 
                 var endConnect = new AsyncCallback(o =>
                 {
-                    var state = (TcpClient)o.AsyncState;
+                    var state = (TcpClient)o.AsyncState!;
                     state.EndConnect(o);
                     connectDone.Set();
+                    
                     Logger.Debug($"SM25 {Ip} Connection Test {client.Connected}");
+                    
                     OnConnectionStateChanged?.Invoke(client.Connected
                         ? ConnectionStatus.Connected
                         : ConnectionStatus.Closed);
@@ -88,6 +88,7 @@ namespace Toletus.SM25.Base
             try
             {
                 Logger.Debug($"Connecting to SM25 {Ip} Reader");
+                
                 _client = new TcpClient();
                 _client.Connect(Ip, Port);
                 Thread.Sleep(500);
@@ -97,6 +98,7 @@ namespace Toletus.SM25.Base
             catch (Exception e)
             {
                 Logger.Debug($"Error connecting to SM25 {Ip} Reader {e.ToLogString(Environment.StackTrace)}");
+                
                 CloseClient();
                 OnConnectionStateChanged?.Invoke(ConnectionStatus.Closed);
                 return;
@@ -110,16 +112,9 @@ namespace Toletus.SM25.Base
         private CancellationTokenSource _cts;
         private void StartResponseThread()
         {
-            //if (_reponseThread != null && _reponseThread.IsAlive) return;
-
-            //_reponseThread = new Thread(ReceiveResponse) { Name = "SM25Response", IsBackground = true };
-            //_reponseThread.Start();
-
-            // Create the token source.
             _cts = new CancellationTokenSource();
 
-            // Pass the token to the cancelable operation.
-            ThreadPool.QueueUserWorkItem(new WaitCallback(ReceiveResponse), _cts.Token);
+            ThreadPool.QueueUserWorkItem(ReceiveResponse, _cts.Token);
         }
 
         public void Close()

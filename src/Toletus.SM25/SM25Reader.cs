@@ -20,7 +20,6 @@ namespace Toletus.SM25
         public event Action OnGeneralizationFail;
 
         public Sync Sync { get; }
-
         public bool Present { get; internal set; }
 
         public SM25Reader(IPAddress ip) : base(ip)

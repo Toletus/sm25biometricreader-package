@@ -51,6 +51,7 @@ namespace Toletus.SM25.Command
         public ushort Data => RawData.Length == 0 ? (ushort)0 : BitConverter.ToUInt16(RawData, 0);
         public ushort ChecksumFromReturn => Payload.Length == 0 ? (ushort)0 : BitConverter.ToUInt16(Payload, Payload.Length - 2);
         public ushort ChecksumCalculated => Checksum.Calculate(Payload);
+        
         public ResponsePrefixes Prefix
         {
             get
@@ -109,15 +110,13 @@ namespace Toletus.SM25.Command
                             default:
                                 return 0;
                         }
-
-                        break;
                 }
             }
         }
 
-        public override string ToString()
+        public override string? ToString()
         {
-            string ret = null;
+            string? ret = null;
 
             try
             {
@@ -134,7 +133,7 @@ namespace Toletus.SM25.Command
             }
             catch (Exception ex)
             {
-
+                // ignored
             }
 
             return ret; 
