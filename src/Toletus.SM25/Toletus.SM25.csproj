@@ -4,6 +4,9 @@
 	<TargetFramework>net7</TargetFramework>
     <Nullable>enable</Nullable>
 
+    <RepositoryUrl>https://github.com/Toletus/SM25BiometricReader-Package.git</RepositoryUrl>
+    <PackageVersion>$(PackageVersion)</PackageVersion>
+
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
 
