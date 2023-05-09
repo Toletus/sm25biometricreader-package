@@ -70,17 +70,17 @@ public class ReaderResponseCommand
         }
     }
 
-    public Commands Command
+    public SM25Commands Sm25Command
     {
         get
         {
             try
             {
-                return (Commands)BitConverter.ToUInt16(Payload, 2);
+                return (SM25Commands)BitConverter.ToUInt16(Payload, 2);
             }
             catch
             {
-                return Commands.Unknow;
+                return SM25Commands.Unknow;
             }
         }
     }
@@ -102,13 +102,13 @@ public class ReaderResponseCommand
                 case ResponsePrefixes.ResponseCommand:
                     return 24;
                 default:
-                    switch (Command)
+                    switch (Sm25Command)
                     {
-                        case Commands.ReadTemplate:
+                        case SM25Commands.ReadTemplate:
                             return 510;
-                        case Commands.GetEnrollData:
+                        case SM25Commands.GetEnrollData:
                             return 508;
-                        case Commands.WriteTemplate:
+                        case SM25Commands.WriteTemplate:
                             return 12;
                         default:
                             return 0;
@@ -126,7 +126,7 @@ public class ReaderResponseCommand
             if (Payload == null) return string.Empty;
 
             ret = $"[{Payload.ToHexString(" ")}]";
-            ret += $" {Command}";
+            ret += $" {Sm25Command}";
             ret += $" {ReturnCode}";
             ret += $" {Data}";
             ret += $" {DataReturnCode}";

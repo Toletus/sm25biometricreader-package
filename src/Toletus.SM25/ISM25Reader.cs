@@ -6,47 +6,47 @@ interface ISM25Reader
 {
     void Close();
 
-    Commands GetDeviceName();
+    SM25Commands GetDeviceName();
 
-    Commands GetFWVersion();
+    SM25Commands GetFWVersion();
 
-    Commands GetDeviceId();
+    SM25Commands GetDeviceId();
 
-    Commands GetEmptyID();
+    SM25Commands GetEmptyID();
 
-    Commands Enroll(ushort id);
+    SM25Commands Enroll(ushort id);
 
-    Commands EnrollAndStoreinRAM();
+    SM25Commands EnrollAndStoreinRAM();
 
-    Commands GetEnrollData();
+    SM25Commands GetEnrollData();
 
-    Commands GetEnrollCount();
+    SM25Commands GetEnrollCount();
 
-    Commands ClearTemplate(ushort id);
+    SM25Commands ClearTemplate(ushort id);
 
-    Commands GetTemplateStatus(ushort id);
+    SM25Commands GetTemplateStatus(ushort id);
 
-    Commands ClearAllTemplate();
+    SM25Commands ClearAllTemplate();
 
-    Commands SetDeviceId(ushort i);
+    SM25Commands SetDeviceId(ushort i);
 
-    Commands SetFingerTimeOut(ushort i);
+    SM25Commands SetFingerTimeOut(ushort i);
 
-    Commands FPCancel();
+    SM25Commands FPCancel();
 
-    Commands GetDuplicationCheck();
+    SM25Commands GetDuplicationCheck();
 
-    Commands SetDuplicationCheck(bool check);
+    SM25Commands SetDuplicationCheck(bool check);
 
-    Commands GetSecurityLevel();
+    SM25Commands GetSecurityLevel();
 
-    Commands SetSecurityLevel(ushort level);
+    SM25Commands SetSecurityLevel(ushort level);
 
-    Commands GetFingerTimeOut();
+    SM25Commands GetFingerTimeOut();
 
-    Commands ReadTemplate(ushort id);
+    SM25Commands ReadTemplate(ushort id);
 
-    Commands WriteTemplate();
+    SM25Commands WriteTemplate();
 
-    Commands WriteTemplateData(ushort id, byte[] template);
+    SM25Commands WriteTemplateData(ushort id, byte[] template);
 }

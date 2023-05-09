@@ -10,7 +10,7 @@ namespace Toletus.SM25;
 public class Sync : IDisposable
 {
     private readonly SM25Reader _scanner;
-    private Commands _commandToWait;
+    private SM25Commands _sm25CommandToWait;
     private ReaderResponseCommand? _responseCommand;
 
     public Sync(SM25Reader scanner)
@@ -21,32 +21,32 @@ public class Sync : IDisposable
 
     private void ScannerOnResponse(ReaderResponseCommand? responseCommand)
     {
-        if (responseCommand?.Command == _commandToWait)
+        if (responseCommand?.Sm25Command == _sm25CommandToWait)
             _responseCommand = responseCommand;
     }
 
     public ReaderResponseCommand? GetDeviceName()
     {
-        BeforeSend(Commands.GetDeviceName);
+        BeforeSend(SM25Commands.GetDeviceName);
         return GetReponse(_scanner.GetDeviceName());
     }
 
-    private void BeforeSend(Commands command)
+    private void BeforeSend(SM25Commands sm25Command)
     {
         _responseCommand = null;
 
         if (!_scanner.Enrolling) return;
 
-        SM25ReaderBase.Log?.Invoke($" SM25 {_scanner.Ip} < Sending {command} while erolling. Was sent {nameof(_scanner.FPCancel)} before.");
+        SM25ReaderBase.Log?.Invoke($" SM25 {_scanner.Ip} < Sending {sm25Command} while erolling. Was sent {nameof(_scanner.FPCancel)} before.");
         _scanner.FPCancel();
     }
 
-    private ReaderResponseCommand? GetReponse(Commands command)
+    private ReaderResponseCommand? GetReponse(SM25Commands sm25Command)
     {
         var sw = new Stopwatch();
         sw.Start();
 
-        _commandToWait = command;
+        _sm25CommandToWait = sm25Command;
 
         while (_responseCommand == null && sw.Elapsed.TotalSeconds < 5)
         {
@@ -62,31 +62,31 @@ public class Sync : IDisposable
 
     public ReaderResponseCommand? GetFWVersion()
     {
-        BeforeSend(Commands.GetFWVersion);
+        BeforeSend(SM25Commands.GetFWVersion);
         return GetReponse(_scanner.GetFWVersion());
     }
 
     public ReaderResponseCommand? GetDeviceId()
     {
-        BeforeSend(Commands.GetDeviceID);
+        BeforeSend(SM25Commands.GetDeviceID);
         return GetReponse(_scanner.GetDeviceId());
     }
 
     public ReaderResponseCommand? GetEmptyID()
     {
-        BeforeSend(Commands.GetEmptyID);
+        BeforeSend(SM25Commands.GetEmptyID);
         return GetReponse(_scanner.GetEmptyID());
     }
 
     public ReaderResponseCommand? Enroll(ushort id)
     {
-        BeforeSend(Commands.Enroll);
+        BeforeSend(SM25Commands.Enroll);
         return GetReponse(_scanner.Enroll(id));
     }
 
     public ReaderResponseCommand? EnrollAndStoreinRAM()
     {
-        BeforeSend(Commands.EnrollAndStoreinRAM);
+        BeforeSend(SM25Commands.EnrollAndStoreinRAM);
         return GetReponse(_scanner.EnrollAndStoreinRAM());
     }
 
@@ -97,13 +97,13 @@ public class Sync : IDisposable
 
     public ReaderResponseCommand? GetEnrollCount()
     {
-        BeforeSend(Commands.GetEnrollCount);
+        BeforeSend(SM25Commands.GetEnrollCount);
         return GetReponse(_scanner.GetEnrollCount());
     }
 
     public ReaderResponseCommand? ClearTemplate(ushort id)
     {
-        BeforeSend(Commands.ClearTemplate);
+        BeforeSend(SM25Commands.ClearTemplate);
         return GetReponse(_scanner.ClearTemplate(id));
     }
 
@@ -114,7 +114,7 @@ public class Sync : IDisposable
 
     public ReaderResponseCommand? ClearAllTemplate()
     {
-        BeforeSend(Commands.ClearAllTemplate);
+        BeforeSend(SM25Commands.ClearAllTemplate);
         return GetReponse(_scanner.ClearAllTemplate());
     }
 
@@ -125,7 +125,7 @@ public class Sync : IDisposable
 
     public ReaderResponseCommand? SetFingerTimeOut(ushort i)
     {
-        BeforeSend(Commands.SetFingerTimeOut);
+        BeforeSend(SM25Commands.SetFingerTimeOut);
         return GetReponse(_scanner.SetFingerTimeOut(i));
     }
 
@@ -136,7 +136,7 @@ public class Sync : IDisposable
 
     public ReaderResponseCommand? GetDuplicationCheck()
     {
-        BeforeSend(Commands.GetDuplicationCheck);
+        BeforeSend(SM25Commands.GetDuplicationCheck);
         return GetReponse(_scanner.GetDuplicationCheck());
     }
 
@@ -147,7 +147,7 @@ public class Sync : IDisposable
 
     public ReaderResponseCommand? GetSecurityLevel()
     {
-        BeforeSend(Commands.GetSecurityLevel);
+        BeforeSend(SM25Commands.GetSecurityLevel);
         return GetReponse(_scanner.GetSecurityLevel());
     }
 
@@ -168,13 +168,13 @@ public class Sync : IDisposable
 
     public ReaderResponseCommand? WriteTemplate()
     {
-        BeforeSend(Commands.WriteTemplate);
+        BeforeSend(SM25Commands.WriteTemplate);
         return GetReponse(_scanner.WriteTemplate());
     }
 
     public ReaderResponseCommand? WriteTemplateData(ushort id, byte[] template)
     {
-        BeforeSend(Commands.WriteTemplate);
+        BeforeSend(SM25Commands.WriteTemplate);
         return GetReponse(_scanner.WriteTemplateData(id, template));
     }
 
@@ -185,7 +185,7 @@ public class Sync : IDisposable
 
     public ReaderResponseCommand? TestConnection()
     {
-        BeforeSend(Commands.TestConnection);
+        BeforeSend(SM25Commands.TestConnection);
         return GetReponse(_scanner.TestConnection());
     }
 }

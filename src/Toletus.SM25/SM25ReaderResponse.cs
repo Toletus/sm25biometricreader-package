@@ -46,34 +46,34 @@ public partial class SM25Reader
         OnResponse?.Invoke(readerResponseCommand);
 
         if (LastReaderSendCommand != null)
-            if (LastReaderSendCommand.Command == readerResponseCommand.Command || LastReaderSendCommand.Command == Commands.FPCancel &&
-                (readerResponseCommand.Command == Commands.Enroll || readerResponseCommand.Command == Commands.EnrollAndStoreinRAM || readerResponseCommand.Command == Commands.Identify))
+            if (LastReaderSendCommand.Sm25Command == readerResponseCommand.Sm25Command || LastReaderSendCommand.Sm25Command == SM25Commands.FPCancel &&
+                (readerResponseCommand.Sm25Command == SM25Commands.Enroll || readerResponseCommand.Sm25Command == SM25Commands.EnrollAndStoreinRAM || readerResponseCommand.Sm25Command == SM25Commands.Identify))
                 LastReaderSendCommand.ReaderResponseCommand = readerResponseCommand;
 
         try
         {
             ValidateChecksum(readerResponseCommand);
 
-            switch (readerResponseCommand.Command)
+            switch (readerResponseCommand.Sm25Command)
             {
-                case Commands.Enroll:
-                case Commands.EnrollAndStoreinRAM:
+                case SM25Commands.Enroll:
+                case SM25Commands.EnrollAndStoreinRAM:
                     ProcessEnrollResponse(readerResponseCommand);
                     break;
-                case Commands.GetEmptyID:
+                case SM25Commands.GetEmptyID:
                     ProcessEmptyIdResponse(readerResponseCommand);
                     break;
-                case Commands.ClearTemplate:
+                case SM25Commands.ClearTemplate:
                     PreccessClearTemplateResponse(readerResponseCommand);
                     break;
-                case Commands.ClearAllTemplate:
+                case SM25Commands.ClearAllTemplate:
                     ProcessClearAllTemplatesResponse(readerResponseCommand);
                     break;
-                case Commands.GetTemplateStatus:
+                case SM25Commands.GetTemplateStatus:
                     ProcessTemplateStatusResponse(readerResponseCommand);
                     break;
                 default:
-                    var status = $"{readerResponseCommand.Command.AsString(EnumFormat.Description)} {readerResponseCommand.Data}";
+                    var status = $"{readerResponseCommand.Sm25Command.AsString(EnumFormat.Description)} {readerResponseCommand.Data}";
                     SendStatus(status);
                     break;
             }
@@ -87,7 +87,7 @@ public partial class SM25Reader
 
     private void ProcessTemplateStatusResponse(ReaderResponseCommand readerResponseCommand)
     {
-        if (readerResponseCommand.Command == Commands.GetTemplateStatus)
+        if (readerResponseCommand.Sm25Command == SM25Commands.GetTemplateStatus)
             readerResponseCommand.DataTemplateStatus = (TemplateStatus)readerResponseCommand.Data;
 
         SendStatus(readerResponseCommand.ReturnCode == ReturnCodes.ERR_SUCCESS

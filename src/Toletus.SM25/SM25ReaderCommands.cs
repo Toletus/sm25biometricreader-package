@@ -6,59 +6,59 @@ namespace Toletus.SM25;
 
 public partial class SM25Reader 
 {
-    public Commands GetDeviceName()
+    public SM25Commands GetDeviceName()
     {
-        return Send(new ReaderSendCommand(Commands.GetDeviceName));
+        return Send(new ReaderSendCommand(SM25Commands.GetDeviceName));
     }
 
-    public Commands GetFWVersion()
+    public SM25Commands GetFWVersion()
     {
-        return Send(new ReaderSendCommand(Commands.GetFWVersion));
+        return Send(new ReaderSendCommand(SM25Commands.GetFWVersion));
     }
 
-    public Commands GetDeviceId()
+    public SM25Commands GetDeviceId()
     {
-        return Send(new ReaderSendCommand(Commands.GetDeviceID));
+        return Send(new ReaderSendCommand(SM25Commands.GetDeviceID));
     }
 
-    public Commands GetEmptyID()
+    public SM25Commands GetEmptyID()
     {
-        return Send(new ReaderSendCommand(Commands.GetEmptyID));
+        return Send(new ReaderSendCommand(SM25Commands.GetEmptyID));
     }
 
-    public Commands Enroll(ushort id)
+    public SM25Commands Enroll(ushort id)
     {
-        return Send(new ReaderSendCommand(Commands.Enroll, id));
+        return Send(new ReaderSendCommand(SM25Commands.Enroll, id));
     }
 
-    public Commands EnrollAndStoreinRAM()
+    public SM25Commands EnrollAndStoreinRAM()
     {
-        return Send(new ReaderSendCommand(Commands.EnrollAndStoreinRAM));
+        return Send(new ReaderSendCommand(SM25Commands.EnrollAndStoreinRAM));
     }
 
-    public Commands GetEnrollData()
+    public SM25Commands GetEnrollData()
     {
-        return Send(new ReaderSendCommand(Commands.GetEnrollData));
+        return Send(new ReaderSendCommand(SM25Commands.GetEnrollData));
     }
 
-    public Commands GetEnrollCount()
+    public SM25Commands GetEnrollCount()
     {
-        return Send(new ReaderSendCommand(Commands.GetEnrollCount));
+        return Send(new ReaderSendCommand(SM25Commands.GetEnrollCount));
     }
 
-    public Commands ClearTemplate(ushort id)
+    public SM25Commands ClearTemplate(ushort id)
     {
-        return Send(new ReaderSendCommand(Commands.ClearTemplate, id));
+        return Send(new ReaderSendCommand(SM25Commands.ClearTemplate, id));
     }
 
-    public Commands GetTemplateStatus(ushort id)
+    public SM25Commands GetTemplateStatus(ushort id)
     {
-        return Send(new ReaderSendCommand(Commands.GetTemplateStatus, id));
+        return Send(new ReaderSendCommand(SM25Commands.GetTemplateStatus, id));
     }
 
-    public Commands ClearAllTemplate()
+    public SM25Commands ClearAllTemplate()
     {
-        return Send(new ReaderSendCommand(Commands.ClearAllTemplate));
+        return Send(new ReaderSendCommand(SM25Commands.ClearAllTemplate));
     }
 
     public new void Close()
@@ -66,57 +66,57 @@ public partial class SM25Reader
         base.Close();
     }
 
-    public Commands SetDeviceId(ushort i)
+    public SM25Commands SetDeviceId(ushort i)
     {
-        return Send(new ReaderSendCommand(Commands.SetDeviceID, i));
+        return Send(new ReaderSendCommand(SM25Commands.SetDeviceID, i));
     }
 
-    public Commands SetFingerTimeOut(ushort i)
+    public SM25Commands SetFingerTimeOut(ushort i)
     {
-        return Send(new ReaderSendCommand(Commands.SetFingerTimeOut, i));
+        return Send(new ReaderSendCommand(SM25Commands.SetFingerTimeOut, i));
     }
 
-    public Commands FPCancel()
+    public SM25Commands FPCancel()
     {
-        return Send(new ReaderSendCommand(Commands.FPCancel));
+        return Send(new ReaderSendCommand(SM25Commands.FPCancel));
     }
 
-    public Commands GetDuplicationCheck()
+    public SM25Commands GetDuplicationCheck()
     {
-        return Send(new ReaderSendCommand(Commands.GetDuplicationCheck));
+        return Send(new ReaderSendCommand(SM25Commands.GetDuplicationCheck));
     }
 
-    public Commands SetDuplicationCheck(bool check)
+    public SM25Commands SetDuplicationCheck(bool check)
     {
-        return Send(new ReaderSendCommand(Commands.SetDuplicationCheck, check ? 1 : 0));
+        return Send(new ReaderSendCommand(SM25Commands.SetDuplicationCheck, check ? 1 : 0));
     }
 
-    public Commands GetSecurityLevel()
+    public SM25Commands GetSecurityLevel()
     {
-        return Send(new ReaderSendCommand(Commands.GetSecurityLevel));
+        return Send(new ReaderSendCommand(SM25Commands.GetSecurityLevel));
     }
 
-    public Commands SetSecurityLevel(ushort level)
+    public SM25Commands SetSecurityLevel(ushort level)
     {
-        return Send(new ReaderSendCommand(Commands.SetSecurityLevel, level));
+        return Send(new ReaderSendCommand(SM25Commands.SetSecurityLevel, level));
     }
 
-    public Commands GetFingerTimeOut()
+    public SM25Commands GetFingerTimeOut()
     {
-        return Send(new ReaderSendCommand(Commands.GetFingerTimeOut));
+        return Send(new ReaderSendCommand(SM25Commands.GetFingerTimeOut));
     }
 
-    public Commands ReadTemplate(ushort id)
+    public SM25Commands ReadTemplate(ushort id)
     {
-        return Send(new ReaderSendCommand(Commands.ReadTemplate, id));
+        return Send(new ReaderSendCommand(SM25Commands.ReadTemplate, id));
     }
 
-    public Commands WriteTemplate()
+    public SM25Commands WriteTemplate()
     {
-        return Send(new ReaderSendCommand(Commands.WriteTemplate, 498));
+        return Send(new ReaderSendCommand(SM25Commands.WriteTemplate, 498));
     }
 
-    public Commands WriteTemplateData(ushort id, byte[] template)
+    public SM25Commands WriteTemplateData(ushort id, byte[] template)
     {
         if (template.Length > 498) throw new Exception($"Template {id} biometrico excede tamanho esperado.");
 
@@ -125,22 +125,22 @@ public partial class SM25Reader
         data[1] = (byte)(id >> 8);
         Array.Copy(template, 0, data, 2, template.Length);
 
-        return Send(new ReaderSendCommand(Commands.WriteTemplate, data));
+        return Send(new ReaderSendCommand(SM25Commands.WriteTemplate, data));
     }
 
-    public Commands TestConnection()
+    public SM25Commands TestConnection()
     {
-        return Send(new ReaderSendCommand(Commands.TestConnection));
+        return Send(new ReaderSendCommand(SM25Commands.TestConnection));
     }
 
-    private new Commands Send(ReaderSendCommand readerSendCommand)
+    private new SM25Commands Send(ReaderSendCommand readerSendCommand)
     {
-        if (Enrolling && readerSendCommand.Command != Commands.FPCancel)
+        if (Enrolling && readerSendCommand.Sm25Command != SM25Commands.FPCancel)
         {
             Log?.Invoke(
-                $" Bio enviando comando {readerSendCommand.Command} enquanto cadastrando, enviado FPCancel antes.");
+                $" Bio enviando comando {readerSendCommand.Sm25Command} enquanto cadastrando, enviado FPCancel antes.");
                 
-            base.Send(new ReaderSendCommand(Commands.FPCancel));
+            base.Send(new ReaderSendCommand(SM25Commands.FPCancel));
         }
 
         return base.Send(readerSendCommand);

@@ -1,6 +1,6 @@
 ﻿namespace Toletus.SM25.Command.Enums;
 
-public enum Commands
+public enum SM25Commands
 {
     Undefined = 0x0000,
     Verify = 0x0101,

@@ -21,7 +21,7 @@ public class SM25ReaderBase
     public IPAddress Ip;
     public int Port = 7879;
 
-    public event Action<ConnectionStatus>? OnConnectionStateChanged;
+    public event Action<ReaderConnectionStatus>? OnConnectionStateChanged;
     public event Action<ReaderSendCommand>? OnSend;
     public event Action<byte[]>? OnRawResponse;
 
@@ -64,8 +64,8 @@ public class SM25ReaderBase
                 Log?.Invoke($"SM25 {Ip} Connection Test {client.Connected}");
                     
                 OnConnectionStateChanged?.Invoke(client.Connected
-                    ? ConnectionStatus.Connected
-                    : ConnectionStatus.Closed);
+                    ? ReaderConnectionStatus.Connected
+                    : ReaderConnectionStatus.Closed);
 
                 Thread.Sleep(1000);
 
@@ -102,13 +102,13 @@ public class SM25ReaderBase
             Log?.Invoke($"Error connecting to SM25 {Ip} Reader {e.ToLogString(Environment.StackTrace)}");
                 
             CloseClient();
-            OnConnectionStateChanged?.Invoke(ConnectionStatus.Closed);
+            OnConnectionStateChanged?.Invoke(ReaderConnectionStatus.Closed);
             return;
         }
 
         Log?.Invoke($"SM25 {Ip} Reader Connected {Connected}");
 
-        OnConnectionStateChanged?.Invoke(Connected ? ConnectionStatus.Connected : ConnectionStatus.Closed);
+        OnConnectionStateChanged?.Invoke(Connected ? ReaderConnectionStatus.Connected : ReaderConnectionStatus.Closed);
     }
 
     private CancellationTokenSource _cts;
@@ -121,7 +121,7 @@ public class SM25ReaderBase
 
     public void Close()
     {
-        if (Enrolling) Send(new ReaderSendCommand(Commands.FPCancel));
+        if (Enrolling) Send(new ReaderSendCommand(SM25Commands.FPCancel));
 
         try
         {
@@ -134,7 +134,7 @@ public class SM25ReaderBase
         {
             CloseClient();
             Enrolling = false;
-            OnConnectionStateChanged?.Invoke(ConnectionStatus.Closed);
+            OnConnectionStateChanged?.Invoke(ReaderConnectionStatus.Closed);
         }
     }
 
@@ -219,16 +219,16 @@ public class SM25ReaderBase
         }
     }
 
-    protected Commands Send(ReaderSendCommand readerSendCommand)
+    protected SM25Commands Send(ReaderSendCommand readerSendCommand)
     {
-        if (Enrolling && readerSendCommand.Command != Commands.FPCancel)
+        if (Enrolling && readerSendCommand.Sm25Command != SM25Commands.FPCancel)
         {
-            Log?.Invoke($"Command {readerSendCommand.Command} ignored. Expected to finish enroll or FPCancel command.");
-            return readerSendCommand.Command;
+            Log?.Invoke($"Sm25Command {readerSendCommand.Sm25Command} ignored. Expected to finish enroll or FPCancel sm25Command.");
+            return readerSendCommand.Sm25Command;
         }
 
         if (_client == null || !_client.Connected)
-            throw new Exception($"Fingerprint {Ip} reader is not connected. Command sent {readerSendCommand}");
+            throw new Exception($"Fingerprint {Ip} reader is not connected. Sm25Command sent {readerSendCommand}");
 
         _client?.GetStream().Write(readerSendCommand.Payload, 0, readerSendCommand.Payload.Length);
 
@@ -236,6 +236,6 @@ public class SM25ReaderBase
 
         LastReaderSendCommand = readerSendCommand;
 
-        return readerSendCommand.Command;
+        return readerSendCommand.Sm25Command;
     }
 }
