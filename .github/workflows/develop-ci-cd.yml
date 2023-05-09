@@ -1,4 +1,4 @@
-name: Develop (beta)
+name: Main
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@main
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
@@ -28,17 +28,17 @@ jobs:
           version='7.${{ github.run_number }}.${{ github.run_attempt }}'
            echo version=$version
            echo "version=$version" >> $GITHUB_ENV
-      
+
       - name: Build with dotnet
         run: |
           dotnet build "src/Toletus.SM25/Toletus.SM25.csproj" --configuration Release -p:Version=${{ env.version }}
+          dotnet build "src/Toletus.SM25.Base/Toletus.SM25.Base.csproj" --configuration Release -p:Version=${{ env.version }}
+          dotnet build "src/Toletus.SM25.Command/Toletus.SM25.Command.csproj" --configuration Release -p:Version=${{ env.version }}
 
       - name: Create the Package
         run: |
           dotnet pack "src/Toletus.SM25/Toletus.SM25.csproj" --configuration Release /p:PackageVersion=${{ env.version }}-beta
 
       - name: Publish Toletus.SM25 on Nuget
-        #run: dotnet nuget push "src/Toletus.SM25/bin/Release/*.nupkg" -k ${{ secrets.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/toletus/index.json --skip-duplicate
-        run: dotnet nuget push "src/Toletus.SM25/bin/Release/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
-
-       
+        run: |
+          dotnet nuget push "src/Toletus.SM25/bin/Release/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
