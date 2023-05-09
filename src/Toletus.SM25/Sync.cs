@@ -11,7 +11,7 @@ public class Sync : IDisposable
 {
     private readonly SM25Reader _scanner;
     private Commands _commandToWait;
-    private ResponseCommand? _responseCommand;
+    private ReaderResponseCommand? _responseCommand;
 
     public Sync(SM25Reader scanner)
     {
@@ -19,13 +19,13 @@ public class Sync : IDisposable
         _scanner.OnResponse += ScannerOnResponse;
     }
 
-    private void ScannerOnResponse(ResponseCommand? responseCommand)
+    private void ScannerOnResponse(ReaderResponseCommand? responseCommand)
     {
         if (responseCommand?.Command == _commandToWait)
             _responseCommand = responseCommand;
     }
 
-    public ResponseCommand? GetDeviceName()
+    public ReaderResponseCommand? GetDeviceName()
     {
         BeforeSend(Commands.GetDeviceName);
         return GetReponse(_scanner.GetDeviceName());
@@ -41,7 +41,7 @@ public class Sync : IDisposable
         _scanner.FPCancel();
     }
 
-    private ResponseCommand? GetReponse(Commands command)
+    private ReaderResponseCommand? GetReponse(Commands command)
     {
         var sw = new Stopwatch();
         sw.Start();
@@ -60,119 +60,119 @@ public class Sync : IDisposable
         return _responseCommand;
     }
 
-    public ResponseCommand? GetFWVersion()
+    public ReaderResponseCommand? GetFWVersion()
     {
         BeforeSend(Commands.GetFWVersion);
         return GetReponse(_scanner.GetFWVersion());
     }
 
-    public ResponseCommand? GetDeviceId()
+    public ReaderResponseCommand? GetDeviceId()
     {
         BeforeSend(Commands.GetDeviceID);
         return GetReponse(_scanner.GetDeviceId());
     }
 
-    public ResponseCommand? GetEmptyID()
+    public ReaderResponseCommand? GetEmptyID()
     {
         BeforeSend(Commands.GetEmptyID);
         return GetReponse(_scanner.GetEmptyID());
     }
 
-    public ResponseCommand? Enroll(ushort id)
+    public ReaderResponseCommand? Enroll(ushort id)
     {
         BeforeSend(Commands.Enroll);
         return GetReponse(_scanner.Enroll(id));
     }
 
-    public ResponseCommand? EnrollAndStoreinRAM()
+    public ReaderResponseCommand? EnrollAndStoreinRAM()
     {
         BeforeSend(Commands.EnrollAndStoreinRAM);
         return GetReponse(_scanner.EnrollAndStoreinRAM());
     }
 
-    public ResponseCommand GetEnrollData()
+    public ReaderResponseCommand GetEnrollData()
     {
         throw new NotImplementedException();
     }
 
-    public ResponseCommand? GetEnrollCount()
+    public ReaderResponseCommand? GetEnrollCount()
     {
         BeforeSend(Commands.GetEnrollCount);
         return GetReponse(_scanner.GetEnrollCount());
     }
 
-    public ResponseCommand? ClearTemplate(ushort id)
+    public ReaderResponseCommand? ClearTemplate(ushort id)
     {
         BeforeSend(Commands.ClearTemplate);
         return GetReponse(_scanner.ClearTemplate(id));
     }
 
-    public ResponseCommand GetTemplateStatus(ushort id)
+    public ReaderResponseCommand GetTemplateStatus(ushort id)
     {
         throw new NotImplementedException();
     }
 
-    public ResponseCommand? ClearAllTemplate()
+    public ReaderResponseCommand? ClearAllTemplate()
     {
         BeforeSend(Commands.ClearAllTemplate);
         return GetReponse(_scanner.ClearAllTemplate());
     }
 
-    public ResponseCommand SetDeviceId(ushort i)
+    public ReaderResponseCommand SetDeviceId(ushort i)
     {
         throw new NotImplementedException();
     }
 
-    public ResponseCommand? SetFingerTimeOut(ushort i)
+    public ReaderResponseCommand? SetFingerTimeOut(ushort i)
     {
         BeforeSend(Commands.SetFingerTimeOut);
         return GetReponse(_scanner.SetFingerTimeOut(i));
     }
 
-    public ResponseCommand FPCancel()
+    public ReaderResponseCommand FPCancel()
     {
         throw new NotImplementedException();
     }
 
-    public ResponseCommand? GetDuplicationCheck()
+    public ReaderResponseCommand? GetDuplicationCheck()
     {
         BeforeSend(Commands.GetDuplicationCheck);
         return GetReponse(_scanner.GetDuplicationCheck());
     }
 
-    public ResponseCommand SetDuplicationCheck(bool check)
+    public ReaderResponseCommand SetDuplicationCheck(bool check)
     {
         throw new NotImplementedException();
     }
 
-    public ResponseCommand? GetSecurityLevel()
+    public ReaderResponseCommand? GetSecurityLevel()
     {
         BeforeSend(Commands.GetSecurityLevel);
         return GetReponse(_scanner.GetSecurityLevel());
     }
 
-    public ResponseCommand SetSecurityLevel(ushort level)
+    public ReaderResponseCommand SetSecurityLevel(ushort level)
     {
         throw new NotImplementedException();
     }
 
-    public ResponseCommand GetFingerTimeOut()
+    public ReaderResponseCommand GetFingerTimeOut()
     {
         throw new NotImplementedException();
     }
 
-    public ResponseCommand ReadTemplate(ushort id)
+    public ReaderResponseCommand ReadTemplate(ushort id)
     {
         throw new NotImplementedException();
     }
 
-    public ResponseCommand? WriteTemplate()
+    public ReaderResponseCommand? WriteTemplate()
     {
         BeforeSend(Commands.WriteTemplate);
         return GetReponse(_scanner.WriteTemplate());
     }
 
-    public ResponseCommand? WriteTemplateData(ushort id, byte[] template)
+    public ReaderResponseCommand? WriteTemplateData(ushort id, byte[] template)
     {
         BeforeSend(Commands.WriteTemplate);
         return GetReponse(_scanner.WriteTemplateData(id, template));
@@ -183,7 +183,7 @@ public class Sync : IDisposable
         _scanner.OnResponse -= ScannerOnResponse;
     }
 
-    public ResponseCommand? TestConnection()
+    public ReaderResponseCommand? TestConnection()
     {
         BeforeSend(Commands.TestConnection);
         return GetReponse(_scanner.TestConnection());

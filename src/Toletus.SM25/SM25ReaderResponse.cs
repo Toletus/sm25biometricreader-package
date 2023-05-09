@@ -8,7 +8,7 @@ namespace Toletus.SM25;
 
 public partial class SM25Reader
 {
-    private ResponseCommand? _responseCommand;
+    private ReaderResponseCommand? _responseCommand;
 
     private void ProcessResponse(byte[] response)
     {
@@ -19,7 +19,7 @@ public partial class SM25Reader
             while (response.Length > 0)
             {
                 if (_responseCommand == null)
-                    _responseCommand = new ResponseCommand(ref response);
+                    _responseCommand = new ReaderResponseCommand(ref response);
                 else
                     _responseCommand.Add(ref response);
 
@@ -41,39 +41,39 @@ public partial class SM25Reader
         }
     }
 
-    private void ProcessResponseCommand(ResponseCommand responseCommand)
+    private void ProcessResponseCommand(ReaderResponseCommand readerResponseCommand)
     {
-        OnResponse?.Invoke(responseCommand);
+        OnResponse?.Invoke(readerResponseCommand);
 
-        if (LastSendCommand != null)
-            if (LastSendCommand.Command == responseCommand.Command || LastSendCommand.Command == Commands.FPCancel &&
-                (responseCommand.Command == Commands.Enroll || responseCommand.Command == Commands.EnrollAndStoreinRAM || responseCommand.Command == Commands.Identify))
-                LastSendCommand.ResponseCommand = responseCommand;
+        if (LastReaderSendCommand != null)
+            if (LastReaderSendCommand.Command == readerResponseCommand.Command || LastReaderSendCommand.Command == Commands.FPCancel &&
+                (readerResponseCommand.Command == Commands.Enroll || readerResponseCommand.Command == Commands.EnrollAndStoreinRAM || readerResponseCommand.Command == Commands.Identify))
+                LastReaderSendCommand.ReaderResponseCommand = readerResponseCommand;
 
         try
         {
-            ValidateChecksum(responseCommand);
+            ValidateChecksum(readerResponseCommand);
 
-            switch (responseCommand.Command)
+            switch (readerResponseCommand.Command)
             {
                 case Commands.Enroll:
                 case Commands.EnrollAndStoreinRAM:
-                    ProcessEnrollResponse(responseCommand);
+                    ProcessEnrollResponse(readerResponseCommand);
                     break;
                 case Commands.GetEmptyID:
-                    ProcessEmptyIdResponse(responseCommand);
+                    ProcessEmptyIdResponse(readerResponseCommand);
                     break;
                 case Commands.ClearTemplate:
-                    PreccessClearTemplateResponse(responseCommand);
+                    PreccessClearTemplateResponse(readerResponseCommand);
                     break;
                 case Commands.ClearAllTemplate:
-                    ProcessClearAllTemplatesResponse(responseCommand);
+                    ProcessClearAllTemplatesResponse(readerResponseCommand);
                     break;
                 case Commands.GetTemplateStatus:
-                    ProcessTemplateStatusResponse(responseCommand);
+                    ProcessTemplateStatusResponse(readerResponseCommand);
                     break;
                 default:
-                    var status = $"{responseCommand.Command.AsString(EnumFormat.Description)} {responseCommand.Data}";
+                    var status = $"{readerResponseCommand.Command.AsString(EnumFormat.Description)} {readerResponseCommand.Data}";
                     SendStatus(status);
                     break;
             }
@@ -85,58 +85,58 @@ public partial class SM25Reader
     }
 
 
-    private void ProcessTemplateStatusResponse(ResponseCommand responseCommand)
+    private void ProcessTemplateStatusResponse(ReaderResponseCommand readerResponseCommand)
     {
-        if (responseCommand.Command == Commands.GetTemplateStatus)
-            responseCommand.DataTemplateStatus = (TemplateStatus)responseCommand.Data;
+        if (readerResponseCommand.Command == Commands.GetTemplateStatus)
+            readerResponseCommand.DataTemplateStatus = (TemplateStatus)readerResponseCommand.Data;
 
-        SendStatus(responseCommand.ReturnCode == ReturnCodes.ERR_SUCCESS
-            ? $"{responseCommand.DataTemplateStatus}"
-            : $"{responseCommand.DataReturnCode}");
+        SendStatus(readerResponseCommand.ReturnCode == ReturnCodes.ERR_SUCCESS
+            ? $"{readerResponseCommand.DataTemplateStatus}"
+            : $"{readerResponseCommand.DataReturnCode}");
     }
 
-    private void ProcessClearAllTemplatesResponse(ResponseCommand responseCommand)
+    private void ProcessClearAllTemplatesResponse(ReaderResponseCommand readerResponseCommand)
     {
-        if (responseCommand.ReturnCode == ReturnCodes.ERR_SUCCESS)
-            SendStatus($"All tremplates removed. Qt. {responseCommand.Data}");
+        if (readerResponseCommand.ReturnCode == ReturnCodes.ERR_SUCCESS)
+            SendStatus($"All tremplates removed. Qt. {readerResponseCommand.Data}");
         else
-            SendStatus($"Can't remove all templates. {((ReturnCodes)responseCommand.Data).AsString(EnumFormat.Description)}");
+            SendStatus($"Can't remove all templates. {((ReturnCodes)readerResponseCommand.Data).AsString(EnumFormat.Description)}");
     }
 
-    private void PreccessClearTemplateResponse(ResponseCommand responseCommand)
+    private void PreccessClearTemplateResponse(ReaderResponseCommand readerResponseCommand)
     {
-        if (responseCommand.ReturnCode == ReturnCodes.ERR_SUCCESS)
-            SendStatus($"Template {responseCommand.Data} removed");
+        if (readerResponseCommand.ReturnCode == ReturnCodes.ERR_SUCCESS)
+            SendStatus($"Template {readerResponseCommand.Data} removed");
         else
         {
-            if (responseCommand.Data == (ushort)ReturnCodes.ERR_TMPL_EMPTY)
+            if (readerResponseCommand.Data == (ushort)ReturnCodes.ERR_TMPL_EMPTY)
                 SendStatus($"Empty template");
             else
-                SendStatus($"Can't remove template. {((ReturnCodes)responseCommand.Data).AsString(EnumFormat.Description)}");
+                SendStatus($"Can't remove template. {((ReturnCodes)readerResponseCommand.Data).AsString(EnumFormat.Description)}");
         }
     }
 
-    private void ProcessEmptyIdResponse(ResponseCommand responseCommand)
+    private void ProcessEmptyIdResponse(ReaderResponseCommand readerResponseCommand)
     {
-        SendStatus($"ID available {responseCommand.Data}");
-        OnIdAvailable?.Invoke(responseCommand.Data);
+        SendStatus($"ID available {readerResponseCommand.Data}");
+        OnIdAvailable?.Invoke(readerResponseCommand.Data);
     }
 
-    private void ProcessEnrollResponse(ResponseCommand responseCommand)
+    private void ProcessEnrollResponse(ReaderResponseCommand readerResponseCommand)
     {
-        var enrollStatus = new EnrollStatus { Ret = responseCommand.ReturnCode, DataGD = responseCommand.DataGD, DataReturnCode = responseCommand.DataReturnCode };
+        var enrollStatus = new EnrollStatus { Ret = readerResponseCommand.ReturnCode, DataGD = readerResponseCommand.DataGD, DataReturnCode = readerResponseCommand.DataReturnCode };
 
-        if (responseCommand.ReturnCode == ReturnCodes.ERR_SUCCESS)
-            ProcessEnrollResponseSuccess(responseCommand, enrollStatus);
-        else if (responseCommand.ReturnCode == ReturnCodes.ERR_FAIL)
-            ProcessEnrollResponseFail(responseCommand, enrollStatus);
+        if (readerResponseCommand.ReturnCode == ReturnCodes.ERR_SUCCESS)
+            ProcessEnrollResponseSuccess(readerResponseCommand, enrollStatus);
+        else if (readerResponseCommand.ReturnCode == ReturnCodes.ERR_FAIL)
+            ProcessEnrollResponseFail(readerResponseCommand, enrollStatus);
 
         OnEnrollStatus?.Invoke(enrollStatus);
     }
 
-    private void ProcessEnrollResponseFail(ResponseCommand responseCommand, EnrollStatus enrollStatus)
+    private void ProcessEnrollResponseFail(ReaderResponseCommand readerResponseCommand, EnrollStatus enrollStatus)
     {
-        switch (responseCommand.DataReturnCode)
+        switch (readerResponseCommand.DataReturnCode)
         {
             case ReturnCodes.ERR_TMPL_NOT_EMPTY:
                 SendStatus("Template already enrolled");
@@ -155,8 +155,8 @@ public partial class SM25Reader
                 OnEnrollTimeout?.Invoke();
                 break;
             case ReturnCodes.ERR_DUPLICATION_ID:
-                SendStatus($"Id duplicated with {responseCommand.Data >> 8}");
-                enrollStatus.Data = responseCommand.Data >> 8;
+                SendStatus($"Id duplicated with {readerResponseCommand.Data >> 8}");
+                enrollStatus.Data = readerResponseCommand.Data >> 8;
                 break;
             case ReturnCodes.ERR_FP_CANCEL:
                 Enrolling = false;
@@ -168,9 +168,9 @@ public partial class SM25Reader
         }
     }
 
-    private void ProcessEnrollResponseSuccess(ResponseCommand responseCommand, EnrollStatus enrollStatus)
+    private void ProcessEnrollResponseSuccess(ReaderResponseCommand readerResponseCommand, EnrollStatus enrollStatus)
     {
-        switch (responseCommand.DataGD)
+        switch (readerResponseCommand.DataGD)
         {
             case GDCodes.GD_NEED_FIRST_SWEEP:
                 Enrolling = true;
@@ -191,18 +191,18 @@ public partial class SM25Reader
             default:
                 Enrolling = false;
                 OnEnroll?.Invoke(4);
-                SendStatus($"Enroll {responseCommand.Data}");
-                enrollStatus.Data = responseCommand.Data;
+                SendStatus($"Enroll {readerResponseCommand.Data}");
+                enrollStatus.Data = readerResponseCommand.Data;
                 break;
         }
     }
 
-    private static void ValidateChecksum(ResponseCommand responseCommand)
+    private static void ValidateChecksum(ReaderResponseCommand readerResponseCommand)
     {
-        if (responseCommand.ChecksumIsValid) return;
+        if (readerResponseCommand.ChecksumIsValid) return;
 
         var msg =
-            $"Response checksum is invalid. Response {responseCommand.Payload.ToHexString(" ")} (Expected checksum {responseCommand.ChecksumFromReturn} <> Checksum {responseCommand.ChecksumCalculated})";
+            $"Response checksum is invalid. Response {readerResponseCommand.Payload.ToHexString(" ")} (Expected checksum {readerResponseCommand.ChecksumFromReturn} <> Checksum {readerResponseCommand.ChecksumCalculated})";
 
         Log?.Invoke(msg);
         throw new Exception(msg);

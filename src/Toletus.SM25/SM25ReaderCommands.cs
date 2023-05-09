@@ -8,57 +8,57 @@ public partial class SM25Reader
 {
     public Commands GetDeviceName()
     {
-        return Send(new SendCommand(Commands.GetDeviceName));
+        return Send(new ReaderSendCommand(Commands.GetDeviceName));
     }
 
     public Commands GetFWVersion()
     {
-        return Send(new SendCommand(Commands.GetFWVersion));
+        return Send(new ReaderSendCommand(Commands.GetFWVersion));
     }
 
     public Commands GetDeviceId()
     {
-        return Send(new SendCommand(Commands.GetDeviceID));
+        return Send(new ReaderSendCommand(Commands.GetDeviceID));
     }
 
     public Commands GetEmptyID()
     {
-        return Send(new SendCommand(Commands.GetEmptyID));
+        return Send(new ReaderSendCommand(Commands.GetEmptyID));
     }
 
     public Commands Enroll(ushort id)
     {
-        return Send(new SendCommand(Commands.Enroll, id));
+        return Send(new ReaderSendCommand(Commands.Enroll, id));
     }
 
     public Commands EnrollAndStoreinRAM()
     {
-        return Send(new SendCommand(Commands.EnrollAndStoreinRAM));
+        return Send(new ReaderSendCommand(Commands.EnrollAndStoreinRAM));
     }
 
     public Commands GetEnrollData()
     {
-        return Send(new SendCommand(Commands.GetEnrollData));
+        return Send(new ReaderSendCommand(Commands.GetEnrollData));
     }
 
     public Commands GetEnrollCount()
     {
-        return Send(new SendCommand(Commands.GetEnrollCount));
+        return Send(new ReaderSendCommand(Commands.GetEnrollCount));
     }
 
     public Commands ClearTemplate(ushort id)
     {
-        return Send(new SendCommand(Commands.ClearTemplate, id));
+        return Send(new ReaderSendCommand(Commands.ClearTemplate, id));
     }
 
     public Commands GetTemplateStatus(ushort id)
     {
-        return Send(new SendCommand(Commands.GetTemplateStatus, id));
+        return Send(new ReaderSendCommand(Commands.GetTemplateStatus, id));
     }
 
     public Commands ClearAllTemplate()
     {
-        return Send(new SendCommand(Commands.ClearAllTemplate));
+        return Send(new ReaderSendCommand(Commands.ClearAllTemplate));
     }
 
     public new void Close()
@@ -68,52 +68,52 @@ public partial class SM25Reader
 
     public Commands SetDeviceId(ushort i)
     {
-        return Send(new SendCommand(Commands.SetDeviceID, i));
+        return Send(new ReaderSendCommand(Commands.SetDeviceID, i));
     }
 
     public Commands SetFingerTimeOut(ushort i)
     {
-        return Send(new SendCommand(Commands.SetFingerTimeOut, i));
+        return Send(new ReaderSendCommand(Commands.SetFingerTimeOut, i));
     }
 
     public Commands FPCancel()
     {
-        return Send(new SendCommand(Commands.FPCancel));
+        return Send(new ReaderSendCommand(Commands.FPCancel));
     }
 
     public Commands GetDuplicationCheck()
     {
-        return Send(new SendCommand(Commands.GetDuplicationCheck));
+        return Send(new ReaderSendCommand(Commands.GetDuplicationCheck));
     }
 
     public Commands SetDuplicationCheck(bool check)
     {
-        return Send(new SendCommand(Commands.SetDuplicationCheck, check ? 1 : 0));
+        return Send(new ReaderSendCommand(Commands.SetDuplicationCheck, check ? 1 : 0));
     }
 
     public Commands GetSecurityLevel()
     {
-        return Send(new SendCommand(Commands.GetSecurityLevel));
+        return Send(new ReaderSendCommand(Commands.GetSecurityLevel));
     }
 
     public Commands SetSecurityLevel(ushort level)
     {
-        return Send(new SendCommand(Commands.SetSecurityLevel, level));
+        return Send(new ReaderSendCommand(Commands.SetSecurityLevel, level));
     }
 
     public Commands GetFingerTimeOut()
     {
-        return Send(new SendCommand(Commands.GetFingerTimeOut));
+        return Send(new ReaderSendCommand(Commands.GetFingerTimeOut));
     }
 
     public Commands ReadTemplate(ushort id)
     {
-        return Send(new SendCommand(Commands.ReadTemplate, id));
+        return Send(new ReaderSendCommand(Commands.ReadTemplate, id));
     }
 
     public Commands WriteTemplate()
     {
-        return Send(new SendCommand(Commands.WriteTemplate, 498));
+        return Send(new ReaderSendCommand(Commands.WriteTemplate, 498));
     }
 
     public Commands WriteTemplateData(ushort id, byte[] template)
@@ -125,24 +125,24 @@ public partial class SM25Reader
         data[1] = (byte)(id >> 8);
         Array.Copy(template, 0, data, 2, template.Length);
 
-        return Send(new SendCommand(Commands.WriteTemplate, data));
+        return Send(new ReaderSendCommand(Commands.WriteTemplate, data));
     }
 
     public Commands TestConnection()
     {
-        return Send(new SendCommand(Commands.TestConnection));
+        return Send(new ReaderSendCommand(Commands.TestConnection));
     }
 
-    private new Commands Send(SendCommand sendCommand)
+    private new Commands Send(ReaderSendCommand readerSendCommand)
     {
-        if (Enrolling && sendCommand.Command != Commands.FPCancel)
+        if (Enrolling && readerSendCommand.Command != Commands.FPCancel)
         {
             Log?.Invoke(
-                $" Bio enviando comando {sendCommand.Command} enquanto cadastrando, enviado FPCancel antes.");
+                $" Bio enviando comando {readerSendCommand.Command} enquanto cadastrando, enviado FPCancel antes.");
                 
-            base.Send(new SendCommand(Commands.FPCancel));
+            base.Send(new ReaderSendCommand(Commands.FPCancel));
         }
 
-        return base.Send(sendCommand);
+        return base.Send(readerSendCommand);
     }
 }
