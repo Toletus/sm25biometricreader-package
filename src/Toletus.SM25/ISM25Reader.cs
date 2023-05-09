@@ -1,53 +1,52 @@
 ﻿using Toletus.SM25.Command.Enums;
 
-namespace Toletus.SM25
+namespace Toletus.SM25;
+
+interface ISM25Reader
 {
-    interface ISM25Reader
-    {
-        void Close();
+    void Close();
 
-        Commands GetDeviceName();
+    Commands GetDeviceName();
 
-        Commands GetFWVersion();
+    Commands GetFWVersion();
 
-        Commands GetDeviceId();
+    Commands GetDeviceId();
 
-        Commands GetEmptyID();
+    Commands GetEmptyID();
 
-        Commands Enroll(ushort id);
+    Commands Enroll(ushort id);
 
-        Commands EnrollAndStoreinRAM();
+    Commands EnrollAndStoreinRAM();
 
-        Commands GetEnrollData();
+    Commands GetEnrollData();
 
-        Commands GetEnrollCount();
+    Commands GetEnrollCount();
 
-        Commands ClearTemplate(ushort id);
+    Commands ClearTemplate(ushort id);
 
-        Commands GetTemplateStatus(ushort id);
+    Commands GetTemplateStatus(ushort id);
 
-        Commands ClearAllTemplate();
+    Commands ClearAllTemplate();
 
-        Commands SetDeviceId(ushort i);
+    Commands SetDeviceId(ushort i);
 
-        Commands SetFingerTimeOut(ushort i);
+    Commands SetFingerTimeOut(ushort i);
 
-        Commands FPCancel();
+    Commands FPCancel();
 
-        Commands GetDuplicationCheck();
+    Commands GetDuplicationCheck();
 
-        Commands SetDuplicationCheck(bool check);
+    Commands SetDuplicationCheck(bool check);
 
-        Commands GetSecurityLevel();
+    Commands GetSecurityLevel();
 
-        Commands SetSecurityLevel(ushort level);
+    Commands SetSecurityLevel(ushort level);
 
-        Commands GetFingerTimeOut();
+    Commands GetFingerTimeOut();
 
-        Commands ReadTemplate(ushort id);
+    Commands ReadTemplate(ushort id);
 
-        Commands WriteTemplate();
+    Commands WriteTemplate();
 
-        Commands WriteTemplateData(ushort id, byte[] template);
-    }
+    Commands WriteTemplateData(ushort id, byte[] template);
 }

@@ -6,7 +6,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Toletus.Extensions\Toletus.Extensions.csproj" />
+	  <PackageReference Include="Toletus.Extensions" Version="7.9.1" />
 	</ItemGroup>
 
 </Project>

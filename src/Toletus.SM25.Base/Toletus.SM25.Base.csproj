@@ -6,7 +6,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Toletus.Extensions\Toletus.Extensions.csproj" />
 		<ProjectReference Include="..\Toletus.SM25.Command\Toletus.SM25.Command.csproj" />
 	</ItemGroup>
 

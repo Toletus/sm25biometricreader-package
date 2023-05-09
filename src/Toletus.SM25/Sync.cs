@@ -1,193 +1,191 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using Toletus.SM25.Base;
 using Toletus.SM25.Command;
 using Toletus.SM25.Command.Enums;
 
-namespace Toletus.SM25
+namespace Toletus.SM25;
+
+public class Sync : IDisposable
 {
-    public class Sync : IDisposable
+    private readonly SM25Reader _scanner;
+    private Commands _commandToWait;
+    private ResponseCommand? _responseCommand;
+
+    public Sync(SM25Reader scanner)
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        _scanner = scanner;
+        _scanner.OnResponse += ScannerOnResponse;
+    }
 
-        private readonly SM25Reader _scanner;
-        private Commands _commandToWait;
-        private ResponseCommand? _responseCommand;
+    private void ScannerOnResponse(ResponseCommand? responseCommand)
+    {
+        if (responseCommand?.Command == _commandToWait)
+            _responseCommand = responseCommand;
+    }
 
-        public Sync(SM25Reader scanner)
+    public ResponseCommand? GetDeviceName()
+    {
+        BeforeSend(Commands.GetDeviceName);
+        return GetReponse(_scanner.GetDeviceName());
+    }
+
+    private void BeforeSend(Commands command)
+    {
+        _responseCommand = null;
+
+        if (!_scanner.Enrolling) return;
+
+        SM25ReaderBase.Log?.Invoke($" SM25 {_scanner.Ip} < Sending {command} while erolling. Was sent {nameof(_scanner.FPCancel)} before.");
+        _scanner.FPCancel();
+    }
+
+    private ResponseCommand? GetReponse(Commands command)
+    {
+        var sw = new Stopwatch();
+        sw.Start();
+
+        _commandToWait = command;
+
+        while (_responseCommand == null && sw.Elapsed.TotalSeconds < 5)
         {
-            _scanner = scanner;
-            _scanner.OnResponse += ScannerOnResponse;
+            Thread.Sleep(100);
         }
 
-        private void ScannerOnResponse(ResponseCommand? responseCommand)
-        {
-            if (responseCommand?.Command == _commandToWait)
-                _responseCommand = responseCommand;
-        }
+        sw.Stop();
 
-        public ResponseCommand? GetDeviceName()
-        {
-            BeforeSend(Commands.GetDeviceName);
-            return GetReponse(_scanner.GetDeviceName());
-        }
+        SM25ReaderBase.Log?.Invoke($" SM25 {_scanner.Ip} < Proccess response total seconds {sw.Elapsed.TotalSeconds}");
 
-        private void BeforeSend(Commands command)
-        {
-            _responseCommand = null;
+        return _responseCommand;
+    }
 
-            if (!_scanner.Enrolling) return;
+    public ResponseCommand? GetFWVersion()
+    {
+        BeforeSend(Commands.GetFWVersion);
+        return GetReponse(_scanner.GetFWVersion());
+    }
 
-            Logger.Debug($" SM25 {_scanner.Ip} < Sending {command} while erolling. Was sent {nameof(_scanner.FPCancel)} before.");
-            _scanner.FPCancel();
-        }
+    public ResponseCommand? GetDeviceId()
+    {
+        BeforeSend(Commands.GetDeviceID);
+        return GetReponse(_scanner.GetDeviceId());
+    }
 
-        private ResponseCommand? GetReponse(Commands command)
-        {
-            var sw = new Stopwatch();
-            sw.Start();
+    public ResponseCommand? GetEmptyID()
+    {
+        BeforeSend(Commands.GetEmptyID);
+        return GetReponse(_scanner.GetEmptyID());
+    }
 
-            _commandToWait = command;
+    public ResponseCommand? Enroll(ushort id)
+    {
+        BeforeSend(Commands.Enroll);
+        return GetReponse(_scanner.Enroll(id));
+    }
 
-            while (_responseCommand == null && sw.Elapsed.TotalSeconds < 5)
-            {
-                Thread.Sleep(100);
-            }
+    public ResponseCommand? EnrollAndStoreinRAM()
+    {
+        BeforeSend(Commands.EnrollAndStoreinRAM);
+        return GetReponse(_scanner.EnrollAndStoreinRAM());
+    }
 
-            sw.Stop();
+    public ResponseCommand GetEnrollData()
+    {
+        throw new NotImplementedException();
+    }
 
-            Logger.Debug($" SM25 {_scanner.Ip} < Proccess response total seconds {sw.Elapsed.TotalSeconds}");
+    public ResponseCommand? GetEnrollCount()
+    {
+        BeforeSend(Commands.GetEnrollCount);
+        return GetReponse(_scanner.GetEnrollCount());
+    }
 
-            return _responseCommand;
-        }
+    public ResponseCommand? ClearTemplate(ushort id)
+    {
+        BeforeSend(Commands.ClearTemplate);
+        return GetReponse(_scanner.ClearTemplate(id));
+    }
 
-        public ResponseCommand? GetFWVersion()
-        {
-            BeforeSend(Commands.GetFWVersion);
-            return GetReponse(_scanner.GetFWVersion());
-        }
+    public ResponseCommand GetTemplateStatus(ushort id)
+    {
+        throw new NotImplementedException();
+    }
 
-        public ResponseCommand? GetDeviceId()
-        {
-            BeforeSend(Commands.GetDeviceID);
-            return GetReponse(_scanner.GetDeviceId());
-        }
+    public ResponseCommand? ClearAllTemplate()
+    {
+        BeforeSend(Commands.ClearAllTemplate);
+        return GetReponse(_scanner.ClearAllTemplate());
+    }
 
-        public ResponseCommand? GetEmptyID()
-        {
-            BeforeSend(Commands.GetEmptyID);
-            return GetReponse(_scanner.GetEmptyID());
-        }
+    public ResponseCommand SetDeviceId(ushort i)
+    {
+        throw new NotImplementedException();
+    }
 
-        public ResponseCommand? Enroll(ushort id)
-        {
-            BeforeSend(Commands.Enroll);
-            return GetReponse(_scanner.Enroll(id));
-        }
+    public ResponseCommand? SetFingerTimeOut(ushort i)
+    {
+        BeforeSend(Commands.SetFingerTimeOut);
+        return GetReponse(_scanner.SetFingerTimeOut(i));
+    }
 
-        public ResponseCommand? EnrollAndStoreinRAM()
-        {
-            BeforeSend(Commands.EnrollAndStoreinRAM);
-            return GetReponse(_scanner.EnrollAndStoreinRAM());
-        }
+    public ResponseCommand FPCancel()
+    {
+        throw new NotImplementedException();
+    }
 
-        public ResponseCommand GetEnrollData()
-        {
-            throw new NotImplementedException();
-        }
+    public ResponseCommand? GetDuplicationCheck()
+    {
+        BeforeSend(Commands.GetDuplicationCheck);
+        return GetReponse(_scanner.GetDuplicationCheck());
+    }
 
-        public ResponseCommand? GetEnrollCount()
-        {
-            BeforeSend(Commands.GetEnrollCount);
-            return GetReponse(_scanner.GetEnrollCount());
-        }
+    public ResponseCommand SetDuplicationCheck(bool check)
+    {
+        throw new NotImplementedException();
+    }
 
-        public ResponseCommand? ClearTemplate(ushort id)
-        {
-            BeforeSend(Commands.ClearTemplate);
-            return GetReponse(_scanner.ClearTemplate(id));
-        }
+    public ResponseCommand? GetSecurityLevel()
+    {
+        BeforeSend(Commands.GetSecurityLevel);
+        return GetReponse(_scanner.GetSecurityLevel());
+    }
 
-        public ResponseCommand GetTemplateStatus(ushort id)
-        {
-            throw new NotImplementedException();
-        }
+    public ResponseCommand SetSecurityLevel(ushort level)
+    {
+        throw new NotImplementedException();
+    }
 
-        public ResponseCommand? ClearAllTemplate()
-        {
-            BeforeSend(Commands.ClearAllTemplate);
-            return GetReponse(_scanner.ClearAllTemplate());
-        }
+    public ResponseCommand GetFingerTimeOut()
+    {
+        throw new NotImplementedException();
+    }
 
-        public ResponseCommand SetDeviceId(ushort i)
-        {
-            throw new NotImplementedException();
-        }
+    public ResponseCommand ReadTemplate(ushort id)
+    {
+        throw new NotImplementedException();
+    }
 
-        public ResponseCommand? SetFingerTimeOut(ushort i)
-        {
-            BeforeSend(Commands.SetFingerTimeOut);
-            return GetReponse(_scanner.SetFingerTimeOut(i));
-        }
+    public ResponseCommand? WriteTemplate()
+    {
+        BeforeSend(Commands.WriteTemplate);
+        return GetReponse(_scanner.WriteTemplate());
+    }
 
-        public ResponseCommand FPCancel()
-        {
-            throw new NotImplementedException();
-        }
+    public ResponseCommand? WriteTemplateData(ushort id, byte[] template)
+    {
+        BeforeSend(Commands.WriteTemplate);
+        return GetReponse(_scanner.WriteTemplateData(id, template));
+    }
 
-        public ResponseCommand? GetDuplicationCheck()
-        {
-            BeforeSend(Commands.GetDuplicationCheck);
-            return GetReponse(_scanner.GetDuplicationCheck());
-        }
+    public void Dispose()
+    {
+        _scanner.OnResponse -= ScannerOnResponse;
+    }
 
-        public ResponseCommand SetDuplicationCheck(bool check)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ResponseCommand? GetSecurityLevel()
-        {
-            BeforeSend(Commands.GetSecurityLevel);
-            return GetReponse(_scanner.GetSecurityLevel());
-        }
-
-        public ResponseCommand SetSecurityLevel(ushort level)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ResponseCommand GetFingerTimeOut()
-        {
-            throw new NotImplementedException();
-        }
-
-        public ResponseCommand ReadTemplate(ushort id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ResponseCommand? WriteTemplate()
-        {
-            BeforeSend(Commands.WriteTemplate);
-            return GetReponse(_scanner.WriteTemplate());
-        }
-
-        public ResponseCommand? WriteTemplateData(ushort id, byte[] template)
-        {
-            BeforeSend(Commands.WriteTemplate);
-            return GetReponse(_scanner.WriteTemplateData(id, template));
-        }
-
-        public void Dispose()
-        {
-            _scanner.OnResponse -= ScannerOnResponse;
-        }
-
-        public ResponseCommand? TestConnection()
-        {
-            BeforeSend(Commands.TestConnection);
-            return GetReponse(_scanner.TestConnection());
-        }
+    public ResponseCommand? TestConnection()
+    {
+        BeforeSend(Commands.TestConnection);
+        return GetReponse(_scanner.TestConnection());
     }
 }

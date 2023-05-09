@@ -1,8 +1,7 @@
-﻿namespace Toletus.SM25.Command.Enums
+﻿namespace Toletus.SM25.Command.Enums;
+
+public enum ConnectionStatus
 {
-    public enum ConnectionStatus
-    {
-        Connected,
-        Closed
-    }
+    Connected,
+    Closed
 }

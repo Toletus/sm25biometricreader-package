@@ -6,9 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Toletus.Extensions\Toletus.Extensions.csproj" />
     <ProjectReference Include="..\Toletus.SM25.Base\Toletus.SM25.Base.csproj" />
     <ProjectReference Include="..\Toletus.SM25.Command\Toletus.SM25.Command.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Enums.NET" Version="4.0.1" />
   </ItemGroup>
 
 </Project>
