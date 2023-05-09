@@ -32,8 +32,8 @@ jobs:
       - name: Build with dotnet
         run: |
           dotnet build "src/Toletus.SM25/Toletus.SM25.csproj" --configuration Release -p:Version=${{ env.version }}
-          dotnet build "src/Toletus.SM25/Toletus.SM25.Base.csproj" --configuration Release -p:Version=${{ env.version }}
-          dotnet build "src/Toletus.SM25/Toletus.SM25.Command.csproj" --configuration Release -p:Version=${{ env.version }}
+          dotnet build "src/Toletus.SM25.Base/Toletus.SM25.Base.csproj" --configuration Release -p:Version=${{ env.version }}
+          dotnet build "src/Toletus.SM25.Command/Toletus.SM25.Command.csproj" --configuration Release -p:Version=${{ env.version }}
 
       - name: Create the Package
         run: |
