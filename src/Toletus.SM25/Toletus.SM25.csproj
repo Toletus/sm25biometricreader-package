@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Toletus.SM25.Base\Toletus.SM25.Base.csproj" PrivateAssets="all" />
-    <ProjectReference Include="..\Toletus.SM25.Command\Toletus.SM25.Command.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
