@@ -8,7 +8,7 @@ namespace Toletus.SM25;
 
 public partial class SM25Reader
 {
-    private ResponseCommand _responseCommand;
+    private ResponseCommand? _responseCommand;
 
     private void ProcessResponse(byte[] response)
     {

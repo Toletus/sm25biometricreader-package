@@ -45,13 +45,16 @@ public class ResponseCommand
     public byte[] Payload => _payload;
     public byte[] ReturnRaw => Payload.Skip(6).Take(2).ToArray();
     public byte[] RawData => Payload.Skip(8).Take(DataLen).ToArray();
-    public byte[] Template => DataLen == 498 ? RawData.ToArray() : null;
+    public byte[]? Template => DataLen == 498 ? RawData.ToArray() : null;
     public int FullReturnLen => BitConverter.ToUInt16(Payload, 4);
     public int DataLen => FullReturnLen - 2;
     public ushort Data => RawData.Length == 0 ? (ushort)0 : BitConverter.ToUInt16(RawData, 0);
-    public ushort ChecksumFromReturn => Payload.Length == 0 ? (ushort)0 : BitConverter.ToUInt16(Payload, Payload.Length - 2);
+
+    public ushort ChecksumFromReturn =>
+        Payload.Length == 0 ? (ushort)0 : BitConverter.ToUInt16(Payload, Payload.Length - 2);
+
     public ushort ChecksumCalculated => Checksum.Calculate(Payload);
-        
+
     public ResponsePrefixes Prefix
     {
         get
@@ -136,6 +139,6 @@ public class ResponseCommand
             // ignored
         }
 
-        return ret; 
+        return ret;
     }
 }

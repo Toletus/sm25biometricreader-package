@@ -21,11 +21,11 @@ public class SM25ReaderBase
     public IPAddress Ip;
     public int Port = 7879;
 
-    public event Action<ConnectionStatus> OnConnectionStateChanged;
-    public event Action<SendCommand> OnSend;
-    public event Action<byte[]> OnRawResponse;
+    public event Action<ConnectionStatus>? OnConnectionStateChanged;
+    public event Action<SendCommand>? OnSend;
+    public event Action<byte[]>? OnRawResponse;
 
-    public bool Busy { get; set; }
+    public bool Busy { get; set; } = false;
     public bool Enrolling { get; set; }
 
     public SM25ReaderBase(IPAddress ip)
@@ -125,7 +125,6 @@ public class SM25ReaderBase
 
         try
         {
-            //_reponseThread?.Abort();
             _cts?.Cancel();
         }
         catch (Exception ex)
@@ -144,7 +143,6 @@ public class SM25ReaderBase
         if (_client == null) return;
 
         Log?.Invoke($"Closing SM25 {Ip} Reader");
-        //Log?.Invoke(Environment.StackTrace);
 
         try
         {
