@@ -21,7 +21,7 @@ public class Sync : IDisposable
 
     private void ScannerOnResponse(ReaderResponseCommand? responseCommand)
     {
-        if (responseCommand?.Sm25Command == _sm25CommandToWait)
+        if (responseCommand?.Command == _sm25CommandToWait)
             _responseCommand = responseCommand;
     }
 

@@ -135,10 +135,10 @@ public partial class SM25Reader
 
     private new SM25Commands Send(ReaderSendCommand readerSendCommand)
     {
-        if (Enrolling && readerSendCommand.Sm25Command != SM25Commands.FPCancel)
+        if (Enrolling && readerSendCommand.Command != SM25Commands.FPCancel)
         {
             Log?.Invoke(
-                $" Bio enviando comando {readerSendCommand.Sm25Command} enquanto cadastrando, enviado FPCancel antes.");
+                $" Bio enviando comando {readerSendCommand.Command} enquanto cadastrando, enviado FPCancel antes.");
                 
             base.Send(new ReaderSendCommand(SM25Commands.FPCancel));
         }

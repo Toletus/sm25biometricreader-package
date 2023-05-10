@@ -11,8 +11,8 @@ public partial class SM25Reader : SM25ReaderBase, ISM25Reader
 
     public event Action<string>? OnStatus;
     public event RetornoHandler? OnResponse;
-    public event Action<int?> OnIdAvailable;
-    public event Action<int?> OnEnroll;
+    public event Action<int?>? OnIdAvailable;
+    public event Action<int?>? OnEnroll;
     public event Action<EnrollStatus>? OnEnrollStatus;
     public event Action? OnEnrollTimeout;
     public event Action? OnGeneralizationFail;

@@ -7,16 +7,16 @@ namespace Toletus.SM25.Command;
 
 public class ReaderSendCommand
 {
-    public ReaderSendCommand(SM25Commands sm25Command) : this(sm25Command, null)
+    public ReaderSendCommand(SM25Commands command) : this(command, null)
     { }
 
-    public ReaderSendCommand(SM25Commands sm25Command, int parameter) : this(sm25Command, BitConverter.GetBytes(parameter).Take(2).ToArray())
+    public ReaderSendCommand(SM25Commands command, int parameter) : this(command, BitConverter.GetBytes(parameter).Take(2).ToArray())
     { }
 
-    public ReaderSendCommand(SM25Commands sm25Command, byte[] parameter = null)
+    public ReaderSendCommand(SM25Commands command, byte[] parameter = null)
     {
         Len = GetLen(parameter?.Length ?? 0);
-        Sm25Command = sm25Command;
+        Command = command;
         Parameter = GetParameter(parameter);
         Payload = GetPayload();
     }
@@ -24,7 +24,7 @@ public class ReaderSendCommand
     public byte[] Payload { get; }
     public ResponsePrefixes Prefix => Parameter.Length == 16 ? ResponsePrefixes.ResponseCommand : ResponsePrefixes.ResponseDataPacket;
     public int Len { get; set; }
-    public SM25Commands Sm25Command { get; set; }
+    public SM25Commands Command { get; set; }
     public byte[] Parameter { get; }
     public ushort ChecksumCalculated { get; private set; }
 
@@ -50,7 +50,7 @@ public class ReaderSendCommand
          *
          * /- Prefix (2 bytes) (0x55aa or 0x5aa5)
          * |
-         * | /- Sm25Command (2 bytes)
+         * | /- Command (2 bytes)
          * | |
          * | | /- Len (2 bytes)
          * | | |
@@ -63,7 +63,7 @@ public class ReaderSendCommand
         */
 
         var pre = (ushort)Prefix;
-        var cmd = (ushort)Sm25Command;
+        var cmd = (ushort)Command;
 
         var rawSend = new byte[8 + Parameter.Length];
         rawSend[0] = (byte)(pre >> 8);
@@ -84,6 +84,6 @@ public class ReaderSendCommand
 
     public override string ToString()
     {
-        return $"{nameof(Sm25Command)} {Sm25Command} {Payload.ToHexString(" ")}";
+        return $"{nameof(Command)} {Command} {Payload.ToHexString(" ")}";
     }
 }

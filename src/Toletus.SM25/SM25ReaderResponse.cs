@@ -46,15 +46,15 @@ public partial class SM25Reader
         OnResponse?.Invoke(readerResponseCommand);
 
         if (LastReaderSendCommand != null)
-            if (LastReaderSendCommand.Sm25Command == readerResponseCommand.Sm25Command || LastReaderSendCommand.Sm25Command == SM25Commands.FPCancel &&
-                (readerResponseCommand.Sm25Command == SM25Commands.Enroll || readerResponseCommand.Sm25Command == SM25Commands.EnrollAndStoreinRAM || readerResponseCommand.Sm25Command == SM25Commands.Identify))
+            if (LastReaderSendCommand.Command == readerResponseCommand.Command || LastReaderSendCommand.Command == SM25Commands.FPCancel &&
+                (readerResponseCommand.Command == SM25Commands.Enroll || readerResponseCommand.Command == SM25Commands.EnrollAndStoreinRAM || readerResponseCommand.Command == SM25Commands.Identify))
                 LastReaderSendCommand.ReaderResponseCommand = readerResponseCommand;
 
         try
         {
             ValidateChecksum(readerResponseCommand);
 
-            switch (readerResponseCommand.Sm25Command)
+            switch (readerResponseCommand.Command)
             {
                 case SM25Commands.Enroll:
                 case SM25Commands.EnrollAndStoreinRAM:
@@ -73,21 +73,20 @@ public partial class SM25Reader
                     ProcessTemplateStatusResponse(readerResponseCommand);
                     break;
                 default:
-                    var status = $"{readerResponseCommand.Sm25Command.AsString(EnumFormat.Description)} {readerResponseCommand.Data}";
+                    var status = $"{readerResponseCommand.Command.AsString(EnumFormat.Description)} {readerResponseCommand.Data}";
                     SendStatus(status);
                     break;
             }
         }
-        catch (ObjectDisposedException e)
+        catch (ObjectDisposedException)
         {
             /* continue */
         }
     }
 
-
     private void ProcessTemplateStatusResponse(ReaderResponseCommand readerResponseCommand)
     {
-        if (readerResponseCommand.Sm25Command == SM25Commands.GetTemplateStatus)
+        if (readerResponseCommand.Command == SM25Commands.GetTemplateStatus)
             readerResponseCommand.DataTemplateStatus = (TemplateStatus)readerResponseCommand.Data;
 
         SendStatus(readerResponseCommand.ReturnCode == ReturnCodes.ERR_SUCCESS

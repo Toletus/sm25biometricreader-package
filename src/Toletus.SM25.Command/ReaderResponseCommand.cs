@@ -70,7 +70,7 @@ public class ReaderResponseCommand
         }
     }
 
-    public SM25Commands Sm25Command
+    public SM25Commands Command
     {
         get
         {
@@ -102,7 +102,7 @@ public class ReaderResponseCommand
                 case ResponsePrefixes.ResponseCommand:
                     return 24;
                 default:
-                    switch (Sm25Command)
+                    switch (Command)
                     {
                         case SM25Commands.ReadTemplate:
                             return 510;
@@ -126,7 +126,7 @@ public class ReaderResponseCommand
             if (Payload == null) return string.Empty;
 
             ret = $"[{Payload.ToHexString(" ")}]";
-            ret += $" {Sm25Command}";
+            ret += $" {Command}";
             ret += $" {ReturnCode}";
             ret += $" {Data}";
             ret += $" {DataReturnCode}";

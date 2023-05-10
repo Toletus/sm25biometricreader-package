@@ -221,14 +221,14 @@ public class SM25ReaderBase
 
     protected SM25Commands Send(ReaderSendCommand readerSendCommand)
     {
-        if (Enrolling && readerSendCommand.Sm25Command != SM25Commands.FPCancel)
+        if (Enrolling && readerSendCommand.Command != SM25Commands.FPCancel)
         {
-            Log?.Invoke($"Sm25Command {readerSendCommand.Sm25Command} ignored. Expected to finish enroll or FPCancel sm25Command.");
-            return readerSendCommand.Sm25Command;
+            Log?.Invoke($"Command {readerSendCommand.Command} ignored. Expected to finish enroll or FPCancel sm25Command.");
+            return readerSendCommand.Command;
         }
 
         if (_client == null || !_client.Connected)
-            throw new Exception($"Fingerprint {Ip} reader is not connected. Sm25Command sent {readerSendCommand}");
+            throw new Exception($"Fingerprint {Ip} reader is not connected. Command sent {readerSendCommand}");
 
         _client?.GetStream().Write(readerSendCommand.Payload, 0, readerSendCommand.Payload.Length);
 
@@ -236,6 +236,6 @@ public class SM25ReaderBase
 
         LastReaderSendCommand = readerSendCommand;
 
-        return readerSendCommand.Sm25Command;
+        return readerSendCommand.Command;
     }
 }
