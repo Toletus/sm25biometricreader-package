@@ -16,13 +16,13 @@ public class SM25ReaderBase
 
     private TcpClient _client;
     //private Thread _reponseThread;
-    protected ReaderSendCommand LastReaderSendCommand;
+    protected ReaderSend LastReaderSend;
 
     public IPAddress Ip;
     public int Port = 7879;
 
     public event Action<ReaderConnectionStatus>? OnConnectionStateChanged;
-    public event Action<ReaderSendCommand>? OnSend;
+    public event Action<ReaderSend>? OnSend;
     public event Action<byte[]>? OnRawResponse;
 
     public bool Busy { get; set; } = false;
@@ -121,7 +121,7 @@ public class SM25ReaderBase
 
     public void Close()
     {
-        if (Enrolling) Send(new ReaderSendCommand(SM25Commands.FPCancel));
+        if (Enrolling) Send(new ReaderSend(SM25Commands.FPCancel));
 
         try
         {
@@ -219,23 +219,23 @@ public class SM25ReaderBase
         }
     }
 
-    protected SM25Commands Send(ReaderSendCommand readerSendCommand)
+    protected SM25Commands Send(ReaderSend readerSend)
     {
-        if (Enrolling && readerSendCommand.Command != SM25Commands.FPCancel)
+        if (Enrolling && readerSend.Command != SM25Commands.FPCancel)
         {
-            Log?.Invoke($"Command {readerSendCommand.Command} ignored. Expected to finish enroll or FPCancel sm25Command.");
-            return readerSendCommand.Command;
+            Log?.Invoke($"Command {readerSend.Command} ignored. Expected to finish enroll or FPCancel sm25Command.");
+            return readerSend.Command;
         }
 
         if (_client == null || !_client.Connected)
-            throw new Exception($"Fingerprint {Ip} reader is not connected. Command sent {readerSendCommand}");
+            throw new Exception($"Fingerprint {Ip} reader is not connected. Command sent {readerSend}");
 
-        _client?.GetStream().Write(readerSendCommand.Payload, 0, readerSendCommand.Payload.Length);
+        _client?.GetStream().Write(readerSend.Payload, 0, readerSend.Payload.Length);
 
-        OnSend?.Invoke(readerSendCommand);
+        OnSend?.Invoke(readerSend);
 
-        LastReaderSendCommand = readerSendCommand;
+        LastReaderSend = readerSend;
 
-        return readerSendCommand.Command;
+        return readerSend.Command;
     }
 }

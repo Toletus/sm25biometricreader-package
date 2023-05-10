@@ -5,11 +5,11 @@ using Toletus.SM25.Command.Enums;
 
 namespace Toletus.SM25.Command;
 
-public class ReaderResponseCommand
+public class ReaderResponse
 {
     public bool IsResponseComplete => Payload.Length == 0 || Payload.Length == ResponseLenghtExpected;
 
-    public ReaderResponseCommand(ref byte[] response)
+    public ReaderResponse(ref byte[] response)
     {
         try
         {

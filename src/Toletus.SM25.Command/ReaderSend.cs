@@ -5,15 +5,15 @@ using Toletus.SM25.Command.Enums;
 
 namespace Toletus.SM25.Command;
 
-public class ReaderSendCommand
+public class ReaderSend
 {
-    public ReaderSendCommand(SM25Commands command) : this(command, null)
+    public ReaderSend(SM25Commands command) : this(command, null)
     { }
 
-    public ReaderSendCommand(SM25Commands command, int parameter) : this(command, BitConverter.GetBytes(parameter).Take(2).ToArray())
+    public ReaderSend(SM25Commands command, int parameter) : this(command, BitConverter.GetBytes(parameter).Take(2).ToArray())
     { }
 
-    public ReaderSendCommand(SM25Commands command, byte[] parameter = null)
+    public ReaderSend(SM25Commands command, byte[] parameter = null)
     {
         Len = GetLen(parameter?.Length ?? 0);
         Command = command;
@@ -28,7 +28,7 @@ public class ReaderSendCommand
     public byte[] Parameter { get; }
     public ushort ChecksumCalculated { get; private set; }
 
-    public ReaderResponseCommand ReaderResponseCommand { get; set; }
+    public ReaderResponse ReaderResponse { get; set; }
 
     private static byte[] GetParameter(byte[] parameter)
     {
