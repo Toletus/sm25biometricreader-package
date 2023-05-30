@@ -21,7 +21,7 @@ public class SM25ReaderBase
     public IPAddress Ip;
     public int Port = 7879;
 
-    public event Action<ReaderConnectionStatus>? OnConnectionStateChanged;
+    public event Action<SM25ConnectionStatus>? OnConnectionStateChanged;
     public event Action<SM25Send>? OnSend;
     public event Action<byte[]>? OnRawResponse;
 
@@ -64,8 +64,8 @@ public class SM25ReaderBase
                 Log?.Invoke($"SM25 {Ip} Connection Test {client.Connected}");
                     
                 OnConnectionStateChanged?.Invoke(client.Connected
-                    ? ReaderConnectionStatus.Connected
-                    : ReaderConnectionStatus.Closed);
+                    ? SM25ConnectionStatus.Connected
+                    : SM25ConnectionStatus.Closed);
 
                 Thread.Sleep(1000);
 
@@ -102,13 +102,13 @@ public class SM25ReaderBase
             Log?.Invoke($"Error connecting to SM25 {Ip} Reader {e.ToLogString(Environment.StackTrace)}");
                 
             CloseClient();
-            OnConnectionStateChanged?.Invoke(ReaderConnectionStatus.Closed);
+            OnConnectionStateChanged?.Invoke(SM25ConnectionStatus.Closed);
             return;
         }
 
         Log?.Invoke($"SM25 {Ip} Reader Connected {Connected}");
 
-        OnConnectionStateChanged?.Invoke(Connected ? ReaderConnectionStatus.Connected : ReaderConnectionStatus.Closed);
+        OnConnectionStateChanged?.Invoke(Connected ? SM25ConnectionStatus.Connected : SM25ConnectionStatus.Closed);
     }
 
     private CancellationTokenSource _cts;
@@ -134,7 +134,7 @@ public class SM25ReaderBase
         {
             CloseClient();
             Enrolling = false;
-            OnConnectionStateChanged?.Invoke(ReaderConnectionStatus.Closed);
+            OnConnectionStateChanged?.Invoke(SM25ConnectionStatus.Closed);
         }
     }
 
