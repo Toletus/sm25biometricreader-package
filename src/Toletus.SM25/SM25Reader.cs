@@ -7,7 +7,7 @@ namespace Toletus.SM25;
 
 public partial class SM25Reader : SM25ReaderBase, ISM25Reader
 {
-    public delegate void RetornoHandler(ReaderResponse readerResponse);
+    public delegate void RetornoHandler(SM25Response sm25Response);
 
     public event Action<string>? OnStatus;
     public event RetornoHandler? OnResponse;
@@ -27,9 +27,9 @@ public partial class SM25Reader : SM25ReaderBase, ISM25Reader
         OnSend += SM25Bio_OnSend;
     }
 
-    private void SM25Bio_OnSend(ReaderSend readerSend)
+    private void SM25Bio_OnSend(SM25Send sm25Send)
     {
-        Log?.Invoke($" SM25 {Ip} > {readerSend}");
+        Log?.Invoke($" SM25 {Ip} > {sm25Send}");
     }
 
     private void SM25BioOnRawResponse(byte[] response)

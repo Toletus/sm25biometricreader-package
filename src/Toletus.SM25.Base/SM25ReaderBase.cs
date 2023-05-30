@@ -16,13 +16,13 @@ public class SM25ReaderBase
 
     private TcpClient _client;
     //private Thread _reponseThread;
-    protected ReaderSend LastReaderSend;
+    protected SM25Send LastSm25Send;
 
     public IPAddress Ip;
     public int Port = 7879;
 
     public event Action<ReaderConnectionStatus>? OnConnectionStateChanged;
-    public event Action<ReaderSend>? OnSend;
+    public event Action<SM25Send>? OnSend;
     public event Action<byte[]>? OnRawResponse;
 
     public bool Busy { get; set; } = false;
@@ -121,7 +121,7 @@ public class SM25ReaderBase
 
     public void Close()
     {
-        if (Enrolling) Send(new ReaderSend(SM25Commands.FPCancel));
+        if (Enrolling) Send(new SM25Send(SM25Commands.FPCancel));
 
         try
         {
@@ -219,23 +219,23 @@ public class SM25ReaderBase
         }
     }
 
-    protected SM25Commands Send(ReaderSend readerSend)
+    protected SM25Commands Send(SM25Send sm25Send)
     {
-        if (Enrolling && readerSend.Command != SM25Commands.FPCancel)
+        if (Enrolling && sm25Send.Command != SM25Commands.FPCancel)
         {
-            Log?.Invoke($"Command {readerSend.Command} ignored. Expected to finish enroll or FPCancel sm25Command.");
-            return readerSend.Command;
+            Log?.Invoke($"Command {sm25Send.Command} ignored. Expected to finish enroll or FPCancel sm25Command.");
+            return sm25Send.Command;
         }
 
         if (_client == null || !_client.Connected)
-            throw new Exception($"Fingerprint {Ip} reader is not connected. Command sent {readerSend}");
+            throw new Exception($"Fingerprint {Ip} reader is not connected. Command sent {sm25Send}");
 
-        _client?.GetStream().Write(readerSend.Payload, 0, readerSend.Payload.Length);
+        _client?.GetStream().Write(sm25Send.Payload, 0, sm25Send.Payload.Length);
 
-        OnSend?.Invoke(readerSend);
+        OnSend?.Invoke(sm25Send);
 
-        LastReaderSend = readerSend;
+        LastSm25Send = sm25Send;
 
-        return readerSend.Command;
+        return sm25Send.Command;
     }
 }

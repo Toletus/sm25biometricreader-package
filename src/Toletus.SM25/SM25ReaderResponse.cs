@@ -8,7 +8,7 @@ namespace Toletus.SM25;
 
 public partial class SM25Reader
 {
-    private ReaderResponse? _responseCommand;
+    private SM25Response? _responseCommand;
 
     private void ProcessResponse(byte[] response)
     {
@@ -19,7 +19,7 @@ public partial class SM25Reader
             while (response.Length > 0)
             {
                 if (_responseCommand == null)
-                    _responseCommand = new ReaderResponse(ref response);
+                    _responseCommand = new SM25Response(ref response);
                 else
                     _responseCommand.Add(ref response);
 
@@ -41,39 +41,39 @@ public partial class SM25Reader
         }
     }
 
-    private void ProcessResponseCommand(ReaderResponse readerResponse)
+    private void ProcessResponseCommand(SM25Response sm25Response)
     {
-        OnResponse?.Invoke(readerResponse);
+        OnResponse?.Invoke(sm25Response);
 
-        if (LastReaderSend != null)
-            if (LastReaderSend.Command == readerResponse.Command || LastReaderSend.Command == SM25Commands.FPCancel &&
-                (readerResponse.Command == SM25Commands.Enroll || readerResponse.Command == SM25Commands.EnrollAndStoreinRAM || readerResponse.Command == SM25Commands.Identify))
-                LastReaderSend.ReaderResponse = readerResponse;
+        if (LastSm25Send != null)
+            if (LastSm25Send.Command == sm25Response.Command || LastSm25Send.Command == SM25Commands.FPCancel &&
+                (sm25Response.Command == SM25Commands.Enroll || sm25Response.Command == SM25Commands.EnrollAndStoreinRAM || sm25Response.Command == SM25Commands.Identify))
+                LastSm25Send.Sm25Response = sm25Response;
 
         try
         {
-            ValidateChecksum(readerResponse);
+            ValidateChecksum(sm25Response);
 
-            switch (readerResponse.Command)
+            switch (sm25Response.Command)
             {
                 case SM25Commands.Enroll:
                 case SM25Commands.EnrollAndStoreinRAM:
-                    ProcessEnrollResponse(readerResponse);
+                    ProcessEnrollResponse(sm25Response);
                     break;
                 case SM25Commands.GetEmptyID:
-                    ProcessEmptyIdResponse(readerResponse);
+                    ProcessEmptyIdResponse(sm25Response);
                     break;
                 case SM25Commands.ClearTemplate:
-                    PreccessClearTemplateResponse(readerResponse);
+                    PreccessClearTemplateResponse(sm25Response);
                     break;
                 case SM25Commands.ClearAllTemplate:
-                    ProcessClearAllTemplatesResponse(readerResponse);
+                    ProcessClearAllTemplatesResponse(sm25Response);
                     break;
                 case SM25Commands.GetTemplateStatus:
-                    ProcessTemplateStatusResponse(readerResponse);
+                    ProcessTemplateStatusResponse(sm25Response);
                     break;
                 default:
-                    var status = $"{readerResponse.Command.AsString(EnumFormat.Description)} {readerResponse.Data}";
+                    var status = $"{sm25Response.Command.AsString(EnumFormat.Description)} {sm25Response.Data}";
                     SendStatus(status);
                     break;
             }
@@ -84,58 +84,58 @@ public partial class SM25Reader
         }
     }
 
-    private void ProcessTemplateStatusResponse(ReaderResponse readerResponse)
+    private void ProcessTemplateStatusResponse(SM25Response sm25Response)
     {
-        if (readerResponse.Command == SM25Commands.GetTemplateStatus)
-            readerResponse.DataTemplateStatus = (TemplateStatus)readerResponse.Data;
+        if (sm25Response.Command == SM25Commands.GetTemplateStatus)
+            sm25Response.DataTemplateStatus = (TemplateStatus)sm25Response.Data;
 
-        SendStatus(readerResponse.ReturnCode == ReturnCodes.ERR_SUCCESS
-            ? $"{readerResponse.DataTemplateStatus}"
-            : $"{readerResponse.DataReturnCode}");
+        SendStatus(sm25Response.ReturnCode == ReturnCodes.ERR_SUCCESS
+            ? $"{sm25Response.DataTemplateStatus}"
+            : $"{sm25Response.DataReturnCode}");
     }
 
-    private void ProcessClearAllTemplatesResponse(ReaderResponse readerResponse)
+    private void ProcessClearAllTemplatesResponse(SM25Response sm25Response)
     {
-        if (readerResponse.ReturnCode == ReturnCodes.ERR_SUCCESS)
-            SendStatus($"All tremplates removed. Qt. {readerResponse.Data}");
+        if (sm25Response.ReturnCode == ReturnCodes.ERR_SUCCESS)
+            SendStatus($"All tremplates removed. Qt. {sm25Response.Data}");
         else
-            SendStatus($"Can't remove all templates. {((ReturnCodes)readerResponse.Data).AsString(EnumFormat.Description)}");
+            SendStatus($"Can't remove all templates. {((ReturnCodes)sm25Response.Data).AsString(EnumFormat.Description)}");
     }
 
-    private void PreccessClearTemplateResponse(ReaderResponse readerResponse)
+    private void PreccessClearTemplateResponse(SM25Response sm25Response)
     {
-        if (readerResponse.ReturnCode == ReturnCodes.ERR_SUCCESS)
-            SendStatus($"Template {readerResponse.Data} removed");
+        if (sm25Response.ReturnCode == ReturnCodes.ERR_SUCCESS)
+            SendStatus($"Template {sm25Response.Data} removed");
         else
         {
-            if (readerResponse.Data == (ushort)ReturnCodes.ERR_TMPL_EMPTY)
+            if (sm25Response.Data == (ushort)ReturnCodes.ERR_TMPL_EMPTY)
                 SendStatus($"Empty template");
             else
-                SendStatus($"Can't remove template. {((ReturnCodes)readerResponse.Data).AsString(EnumFormat.Description)}");
+                SendStatus($"Can't remove template. {((ReturnCodes)sm25Response.Data).AsString(EnumFormat.Description)}");
         }
     }
 
-    private void ProcessEmptyIdResponse(ReaderResponse readerResponse)
+    private void ProcessEmptyIdResponse(SM25Response sm25Response)
     {
-        SendStatus($"ID available {readerResponse.Data}");
-        OnIdAvailable?.Invoke(readerResponse.Data);
+        SendStatus($"ID available {sm25Response.Data}");
+        OnIdAvailable?.Invoke(sm25Response.Data);
     }
 
-    private void ProcessEnrollResponse(ReaderResponse readerResponse)
+    private void ProcessEnrollResponse(SM25Response sm25Response)
     {
-        var enrollStatus = new EnrollStatus { Ret = readerResponse.ReturnCode, DataGD = readerResponse.DataGD, DataReturnCode = readerResponse.DataReturnCode };
+        var enrollStatus = new EnrollStatus { Ret = sm25Response.ReturnCode, DataGD = sm25Response.DataGD, DataReturnCode = sm25Response.DataReturnCode };
 
-        if (readerResponse.ReturnCode == ReturnCodes.ERR_SUCCESS)
-            ProcessEnrollResponseSuccess(readerResponse, enrollStatus);
-        else if (readerResponse.ReturnCode == ReturnCodes.ERR_FAIL)
-            ProcessEnrollResponseFail(readerResponse, enrollStatus);
+        if (sm25Response.ReturnCode == ReturnCodes.ERR_SUCCESS)
+            ProcessEnrollResponseSuccess(sm25Response, enrollStatus);
+        else if (sm25Response.ReturnCode == ReturnCodes.ERR_FAIL)
+            ProcessEnrollResponseFail(sm25Response, enrollStatus);
 
         OnEnrollStatus?.Invoke(enrollStatus);
     }
 
-    private void ProcessEnrollResponseFail(ReaderResponse readerResponse, EnrollStatus enrollStatus)
+    private void ProcessEnrollResponseFail(SM25Response sm25Response, EnrollStatus enrollStatus)
     {
-        switch (readerResponse.DataReturnCode)
+        switch (sm25Response.DataReturnCode)
         {
             case ReturnCodes.ERR_TMPL_NOT_EMPTY:
                 SendStatus("Template already enrolled");
@@ -154,8 +154,8 @@ public partial class SM25Reader
                 OnEnrollTimeout?.Invoke();
                 break;
             case ReturnCodes.ERR_DUPLICATION_ID:
-                SendStatus($"Id duplicated with {readerResponse.Data >> 8}");
-                enrollStatus.Data = readerResponse.Data >> 8;
+                SendStatus($"Id duplicated with {sm25Response.Data >> 8}");
+                enrollStatus.Data = sm25Response.Data >> 8;
                 break;
             case ReturnCodes.ERR_FP_CANCEL:
                 Enrolling = false;
@@ -167,9 +167,9 @@ public partial class SM25Reader
         }
     }
 
-    private void ProcessEnrollResponseSuccess(ReaderResponse readerResponse, EnrollStatus enrollStatus)
+    private void ProcessEnrollResponseSuccess(SM25Response sm25Response, EnrollStatus enrollStatus)
     {
-        switch (readerResponse.DataGD)
+        switch (sm25Response.DataGD)
         {
             case GDCodes.GD_NEED_FIRST_SWEEP:
                 Enrolling = true;
@@ -190,18 +190,18 @@ public partial class SM25Reader
             default:
                 Enrolling = false;
                 OnEnroll?.Invoke(4);
-                SendStatus($"Enroll {readerResponse.Data}");
-                enrollStatus.Data = readerResponse.Data;
+                SendStatus($"Enroll {sm25Response.Data}");
+                enrollStatus.Data = sm25Response.Data;
                 break;
         }
     }
 
-    private static void ValidateChecksum(ReaderResponse readerResponse)
+    private static void ValidateChecksum(SM25Response sm25Response)
     {
-        if (readerResponse.ChecksumIsValid) return;
+        if (sm25Response.ChecksumIsValid) return;
 
         var msg =
-            $"Response checksum is invalid. Response {readerResponse.Payload.ToHexString(" ")} (Expected checksum {readerResponse.ChecksumFromReturn} <> Checksum {readerResponse.ChecksumCalculated})";
+            $"Response checksum is invalid. Response {sm25Response.Payload.ToHexString(" ")} (Expected checksum {sm25Response.ChecksumFromReturn} <> Checksum {sm25Response.ChecksumCalculated})";
 
         Log?.Invoke(msg);
         throw new Exception(msg);
