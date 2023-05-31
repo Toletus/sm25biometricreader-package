@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Toletus.Extensions;
+using Toletus.Pack.Core;
 using Toletus.SM25.Command.Enums;
 
 namespace Toletus.SM25.Command;
