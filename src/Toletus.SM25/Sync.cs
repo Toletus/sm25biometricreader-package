@@ -31,7 +31,7 @@ public class Sync : IDisposable
         return GetReponse(_scanner.GetDeviceName());
     }
 
-    private void BeforeSend(SM25Commands sm25Commdand)
+    private void BeforeSend(SM25Commands sm25Command)
     {
         _responseCommand = null;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using EnumsNET;
 using Toletus.Pack.Core;
+using Toletus.Pack.Core.Extensions;
 using Toletus.SM25.Command;
 using Toletus.SM25.Command.Enums;
 

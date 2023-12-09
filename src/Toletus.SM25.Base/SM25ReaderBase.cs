@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using Toletus.Pack.Core;
+using Toletus.Pack.Core.Extensions;
 using Toletus.SM25.Command;
 using Toletus.SM25.Command.Enums;
 
