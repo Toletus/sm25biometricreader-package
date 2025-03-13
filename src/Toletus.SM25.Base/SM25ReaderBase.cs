@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Toletus.Pack.Core;
 using Toletus.Pack.Core.Extensions;
 using Toletus.SM25.Command;
 using Toletus.SM25.Command.Enums;
@@ -229,7 +228,7 @@ public class SM25ReaderBase
         }
 
         if (_client == null || !_client.Connected)
-            throw new Exception($"Fingerprint {Ip} reader is not connected. Command sent {sm25Send}");
+            throw new FingerprintConnectionException($"Fingerprint {Ip} reader is not connected. Command sent {sm25Send}");
 
         _client?.GetStream().Write(sm25Send.Payload, 0, sm25Send.Payload.Length);
 
